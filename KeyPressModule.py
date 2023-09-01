@@ -30,7 +30,7 @@ def main():
     # print("Right key Pressed")
 
 
-if __name__ == "__main__":
+if __name__ is True:
     init()
     while True:
         main()
