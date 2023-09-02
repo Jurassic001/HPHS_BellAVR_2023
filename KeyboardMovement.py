@@ -27,10 +27,10 @@ def getkeyboardinput():
         yv = -speed
     elif Gk.getkey("e"):
         yv = speed
-    if Gk.getkey("z"):
+    if Gk.getkey("x"):
         me.land()
         sleep(3)
-    if Gk.getkey("x"):
+    if Gk.getkey("z"):
         me.takeoff()
     if Gk.getkey("LEFT"):
         yv = -speed
