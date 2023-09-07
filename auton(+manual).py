@@ -11,6 +11,7 @@ print(me.get_battery())
 
 me.streamon()
 frame_read = me.get_frame_read()
+current_pos = [0, 0, 0, 0]
 
 
 def videofeed():
@@ -20,15 +21,14 @@ def videofeed():
         cv2.imshow("Live Feed", img)
         cv2.waitKey(1)
         cv2.moveWindow("Live Feed", 0, 0)
-        if keyboard.is_pressed("f"):
+        if keyboard.is_pressed("p"):
+            me.streamoff()
+            cv2.destroyAllWindows()
             me.land()
-            time.sleep(3)
-            cv2.destroyAllWindows()
-            me.streamoff()
         if keyboard.is_pressed("space"):
-            me.emergency()
-            cv2.destroyAllWindows()
             me.streamoff()
+            cv2.destroyAllWindows()
+            me.emergency()
 
 
 livestream = Thread(target=videofeed)
@@ -36,23 +36,44 @@ livestream.start()
 
 
 def move(x, y, z):
-    me.go_xyz_speed(x, y, z, 100)
+    me.go_xyz_speed(x-current_pos[0], y-current_pos[1], z-current_pos[2], 100)
+    current_pos[0], current_pos[1], current_pos[2] = current_pos[0]+x, current_pos[1]+y, current_pos[2]+z
+    return current_pos[0], current_pos[1], current_pos[2]
+
+
+def dropoff():
+    time.sleep(1)
+    me.flip_forward()
+    current_pos[0] += 5
+    return current_pos[0]
 
 
 def hover(wait):
-    me.send_rc_control(0, 0, 0, 0)
-    time.sleep(wait)
+    numWait = 0
+    if wait < 14:
+        me.send_rc_control(0, 0, 0, 0)
+        time.sleep(wait)
+    else:
+        while wait > 14:
+            wait -= 14
+            numWait += 1
+        while numWait > 0:
+            me.send_rc_control(0, 0, 0, 0)
+            time.sleep(14)
+        time.sleep(wait)
 
 
 def turn(degree):
-    me.rotate_clockwise(degree)
+    me.rotate_clockwise(degree-current_pos[3])
+    current_pos[3] += degree
+    return current_pos[3]
 
 
 me.takeoff()
-turn(45)
-move(500, 0, 50)
 move(100, 0, 0)
-hover(10)
+dropoff()
+move(0, 0, 0)
+hover(3)
 """
 move(0, 50, 0)
 hover(1)
@@ -60,4 +81,5 @@ move(0, 0, 50)
 hover(1)
 """
 me.land()
-me.streamoff()
+time.sleep(3)
+me.end()

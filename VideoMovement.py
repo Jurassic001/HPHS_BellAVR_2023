@@ -1,10 +1,9 @@
 from djitellopy import tello
-import KeyPressModule as Gk
+import keyboard as kb
 from time import sleep
 import time
 import cv2
 
-Gk.init()
 me = tello.Tello()
 me.connect()
 print(me.get_battery())
@@ -14,45 +13,45 @@ global img
 me.streamon()
 
 
-def getkeyboardinput():
+def keyboard_input():
     lr, fb, ud, yv = 0, 0, 0, 0
     speed = 500
-    if Gk.getkey("a"):
+    if kb.is_pressed("a"):
         lr = -speed
-    elif Gk.getkey("d"):
+    elif kb.is_pressed("d"):
         lr = speed
-    if Gk.getkey("w"):
+    if kb.is_pressed("w"):
         fb = speed
-    elif Gk.getkey("s"):
+    elif kb.is_pressed("s"):
         fb = -speed
-    if Gk.getkey("r"):
+    if kb.is_pressed("r"):
         ud = speed
-    elif Gk.getkey("f"):
+    elif kb.is_pressed("f"):
         ud = -speed
-    if Gk.getkey("q"):
+    if kb.is_pressed("q"):
         yv = -speed
-    elif Gk.getkey("e"):
+    elif kb.is_pressed("e"):
         yv = speed
-    if Gk.getkey("x"):
+    if kb.is_pressed("x"):
         me.land()
         sleep(3)
-    if Gk.getkey("z"):
+    if kb.is_pressed("z"):
         me.takeoff()
-    if Gk.getkey("LEFT"):
+    if kb.is_pressed("LEFT"):
         yv = -speed
-    elif Gk.getkey("RIGHT"):
+    elif kb.is_pressed("RIGHT"):
         yv = speed
-    if Gk.getkey("UP"):
+    if kb.is_pressed("UP"):
         ud = speed
-    elif Gk.getkey("DOWN"):
+    elif kb.is_pressed("DOWN"):
         ud = -speed
-    elif Gk.getkey("c"):
+    elif kb.is_pressed("c"):
         cv2.imwrite(f'Resources/Images/{time.time()}.jpg', img)
     return [lr, fb, ud, yv]
 
 
 while True:
-    vals = getkeyboardinput()
+    vals = keyboard_input()
     me.send_rc_control(vals[0], vals[1], vals[2], vals[3])
     img = me.get_frame_read().frame
     img = cv2.resize(img, (360, 240))
