@@ -15,27 +15,24 @@ frame_read = me.get_frame_read()
 # me.set_wifi_credentials("4Runner", "tellorun")
 
 # Set up the position tracking
-current_pos = [0, 0, 0, 0]
+current_pos = [0, 0, 0]
 
 
 def videofeed():
-    windowFormat = False
     while True:
-        if not me.stream_on:
-            cv2.destroyWindow("Live Feed")
-            exit()
         img = me.get_frame_read().frame
         img = cv2.resize(img, (600, 400))
         cv2.imshow("Live Feed", img)
         cv2.waitKey(1)
-        if not windowFormat:
-            cv2.moveWindow("Live Feed", 600, 0)
-            cv2.setWindowProperty("Live Feed", cv2.WND_PROP_TOPMOST, 1)
-            windowFormat = True
+        cv2.moveWindow("Live Feed", 650, 0)
+        cv2.setWindowProperty("Live Feed", cv2.WND_PROP_TOPMOST, 1)
         if kb.is_pressed("space"):
             me.pipeDown()
-            time.sleep(1)
+        if kb.is_pressed("shift"):
             me.emergency()
+        if kb.is_pressed("enter"):
+            cv2.destroyWindow("Live Feed")
+        if kb.is_pressed("backspace"):
             exit()
 
 
@@ -44,16 +41,16 @@ livestream.start()
 
 
 def move(x, y, z):
-    me.go_xyz_speed(x, y, z, 100)
+    me.go_xyz_speed(x, y, z, 20)
+    me.send_rc_control(0, 0, 0, 0)
     current_pos[0], current_pos[1], current_pos[2] = current_pos[0]+x, current_pos[1]+y, current_pos[2]+z
     return current_pos[0], current_pos[1], current_pos[2]
 
 
 def goHomeET():
-    me.go_xyz_speed(0 - current_pos[0], 0 - current_pos[1], 0 - current_pos[2], 100)
-    me.land()
-    time.sleep(3)
-    me.end()
+    me.go_xyz_speed(0 - current_pos[0], 0 - current_pos[1], 0 - current_pos[2], 20)
+    time.sleep(1)
+    me.pipeDown()
 
 
 def dropoff():
@@ -63,26 +60,32 @@ def dropoff():
     me.flip_forward()
     current_pos[0] += 52
     current_pos[1] += 4
-    """
+
     me.flip_back()
     current_pos[0] += -32
     current_pos[1] += -7
-    return current_pos[0], current_pos[1]
-
-
-def hover(wait):
+    """
+    # Experiment with left and right flips
+    me.flip_right()
+    """ 
+    # maybe this command to halt after flipping?
     me.send_rc_control(0, 0, 0, 0)
-    time.sleep(wait)
-
-
-def turn(degree):
-    me.rotate_clockwise(degree-current_pos[3])
-    current_pos[3] += degree
-    return current_pos[3]
+    """
+    # me.flip_left()
+    return current_pos[0], current_pos[1]
 
 
 while True:
     if kb.is_pressed("f"):
         me.takeoff()
         dropoff()
+        me.land()
+    if kb.is_pressed("w"):
+        me.takeoff()
+        move(100, 0, 0)
+        time.sleep(1)
+        move(0, 100, 0)
+        time.sleep(1)
+        move(0, 0, 100)
+        time.sleep(3)
         goHomeET()
