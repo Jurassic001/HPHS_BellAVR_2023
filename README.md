@@ -1,7 +1,8 @@
-# BellAVR_Tello_2023
-Autonomous and manual control code for the Tello Recon drone during the 2023 Bell Advanced Robotics competition
+# HPHS_BellAVR_2023
+Autonomous and manual control code for the 2023 Bell Advanced Robotics competition
 
-### Packages needed: <br/>
+The tello files are unsorted because I'm a bad planner
+### Packages needed for Tello drone: <br/>
 setuptools <br/>
 pip <br/>
 opencv-python <br/>
