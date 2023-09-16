@@ -11,6 +11,7 @@ me.connect()
 print(me.get_battery())
 me.streamon()
 frame_read = me.get_frame_read()
+
 # Set wifi name and password
 # me.set_wifi_credentials("4Runner", "tellorun")
 
@@ -27,13 +28,10 @@ def videofeed():
         cv2.moveWindow("Live Feed", 650, 0)
         cv2.setWindowProperty("Live Feed", cv2.WND_PROP_TOPMOST, 1)
         if kb.is_pressed("space"):
+            cv2.destroyWindow("Live Feed")
             me.pipeDown()
         if kb.is_pressed("shift"):
             me.emergency()
-        if kb.is_pressed("enter"):
-            cv2.destroyWindow("Live Feed")
-        if kb.is_pressed("backspace"):
-            exit()
 
 
 livestream = Thread(target=videofeed)

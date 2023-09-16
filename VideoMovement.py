@@ -54,6 +54,8 @@ while True:
     vals = keyboard_input()
     me.send_rc_control(vals[0], vals[1], vals[2], vals[3])
     img = me.get_frame_read().frame
-    img = cv2.resize(img, (360, 240))
-    cv2.imshow("Image", img)
+    img = cv2.resize(img, (600, 400))
+    cv2.imshow("Live Feed", img)
     cv2.waitKey(1)
+    cv2.moveWindow("Live Feed", 650, 0)
+    cv2.setWindowProperty("Live Feed", cv2.WND_PROP_TOPMOST, 1)

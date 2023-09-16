@@ -31,9 +31,8 @@ def keyboard_control():
         sleep(3)
     if kb.is_pressed("z"):
         me.takeoff()
-    return [lr, fb, ud, yv]
+    me.send_rc_control(lr, fb, ud, yv)
 
 
 while True:
-    vals = keyboard_control()
-    me.send_rc_control(vals[0], vals[1], vals[2], vals[3])
+    keyboard_control()
