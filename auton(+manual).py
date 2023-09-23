@@ -29,9 +29,11 @@ def videofeed():
         cv2.setWindowProperty("Live Feed", cv2.WND_PROP_TOPMOST, 1)
         if kb.is_pressed("space"):
             cv2.destroyWindow("Live Feed")
-            me.pipeDown()
+            me.end()
         if kb.is_pressed("shift"):
             me.emergency()
+        if kb.is_pressed("enter"):
+            me.land()
 
 
 livestream = Thread(target=videofeed)
@@ -39,16 +41,15 @@ livestream.start()
 
 
 def move(x, y, z):
-    me.go_xyz_speed(x, y, z, 20)
+    me.go_xyz_speed(x, y, z, 100)
     me.send_rc_control(0, 0, 0, 0)
     current_pos[0], current_pos[1], current_pos[2] = current_pos[0]+x, current_pos[1]+y, current_pos[2]+z
     return current_pos[0], current_pos[1], current_pos[2]
 
 
 def goHomeET():
-    me.go_xyz_speed(0 - current_pos[0], 0 - current_pos[1], 0 - current_pos[2], 20)
+    me.go_xyz_speed(0 - current_pos[0], 0 - current_pos[1], 0 - current_pos[2], 100)
     time.sleep(1)
-    me.pipeDown()
 
 
 def dropoff():
@@ -73,17 +74,27 @@ def dropoff():
     return current_pos[0], current_pos[1]
 
 
-while True:
-    if kb.is_pressed("f"):
-        me.takeoff()
-        dropoff()
-        me.land()
-    if kb.is_pressed("w"):
-        me.takeoff()
-        move(100, 0, 0)
-        time.sleep(1)
-        move(0, 100, 0)
-        time.sleep(1)
-        move(0, 0, 100)
-        time.sleep(3)
-        goHomeET()
+if True:
+    fwd = 100
+    while True:
+        if kb.is_pressed("f"):
+            me.takeoff()
+            dropoff()
+            me.land()
+        if kb.is_pressed("w"):
+            me.takeoff()
+            move(500, 0, 50)
+            time.sleep(1)
+            move(0, -200, 0)
+            time.sleep(1)
+            goHomeET()
+        if kb.is_pressed("e"):
+            fwd += 100
+            me.takeoff()
+            time.sleep(2)
+            move(fwd, 0, 50)
+            goHomeET()
+        if kb.is_pressed("s"):
+            me.takeoff()
+            me.downCam()
+
