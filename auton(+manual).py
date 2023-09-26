@@ -56,9 +56,9 @@ def move(x, y, z):
 
 def goHomeET():
     if current_pos[3] >= 360:
-        me.rotate_clockwise(current_pos[3] % 360)
+        me.rotate_counter_clockwise(current_pos[3] % 360)
     else:
-        me.rotate_clockwise(current_pos[3])
+        me.rotate_counter_clockwise(current_pos[3])
     me.go_xyz_speed(current_pos[0], current_pos[1], current_pos[2], 50)
     time.sleep(1)
     current_pos[0], current_pos[1], current_pos[2] = 0, 0, 0
@@ -99,7 +99,8 @@ while True:
     if kb.is_pressed("w"):
         me.takeoff()
         move(100, 0, 0)
-        turn(180)
+        turn(90)
+        move(100, 0, 0)
         goHomeET()
         land()
     if kb.is_pressed("e"):

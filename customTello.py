@@ -1,7 +1,7 @@
-import djitellopy as tello
+from djitellopy import Tello
 
 
-class CustomTello(tello):
+class CustomTello(Tello):
     def __init__(self):
         super().__init__()
 
