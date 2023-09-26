@@ -1,5 +1,5 @@
 # Code by Max Haberer
-from djitellopy import tello
+from customTello import CustomTello
 import time
 import cv2
 from threading import Thread
@@ -7,7 +7,7 @@ import keyboard as kb
 
 
 # Connect to tello, get battery level, and set up the live video feed
-me = tello.Tello()
+me = CustomTello()
 me.connect()
 print("Battery level: " + str(me.get_battery()) + "%")
 time.sleep(1)
@@ -17,26 +17,24 @@ frame_read = me.get_frame_read()
 # Set wifi name and password
 # me.set_wifi_credentials("4Runner", "tellorun")
 
-# Set up the position tracking
-current_pos = [0, 0, 0]
+# Set up the position tracking and video feed on/off boolean
+current_pos = [0, 0, 0, 180]
+feed = True
 
 
 def videofeed():
-    while True:
+    global feed
+    while feed:
         img = me.get_frame_read().frame
         img = cv2.resize(img, (600, 400))
-        cv2.imshow("Live Feed", img)
         cv2.waitKey(1)
+        cv2.imshow("Live Feed", img)
         cv2.moveWindow("Live Feed", 650, 0)
         cv2.setWindowProperty("Live Feed", cv2.WND_PROP_TOPMOST, 1)
         if kb.is_pressed("space"):
-            cv2.destroyWindow("Live Feed")
-            me.land()
-            me.streamoff()
-            exit()
+            me.pipeDown()
         if kb.is_pressed("shift"):
             me.emergency()
-            exit()
         # print("ToF reading: " + str(me.get_distance_tof() - 10))
 
 
@@ -45,11 +43,9 @@ livestream.start()
 
 
 def land():
-    me.land()
-    livestream.daemon = True
-    cv2.destroyWindow("Live Feed")
-    me.streamoff()
-    exit()
+    global feed
+    feed = False
+    me.pipeDown()
 
 
 def move(x, y, z):
@@ -59,7 +55,11 @@ def move(x, y, z):
 
 
 def goHomeET():
-    me.go_xyz_speed(0 - current_pos[0], 0 - current_pos[1], 0 - current_pos[2], 50)
+    if current_pos[3] >= 360:
+        me.rotate_clockwise(current_pos[3] % 360)
+    else:
+        me.rotate_clockwise(current_pos[3])
+    me.go_xyz_speed(current_pos[0], current_pos[1], current_pos[2], 50)
     time.sleep(1)
     current_pos[0], current_pos[1], current_pos[2] = 0, 0, 0
 
@@ -86,34 +86,35 @@ def dropoff():
     return current_pos[0], current_pos[1]
 
 
-if True:
-    fwd = 100
-    while True:
-        if kb.is_pressed("f"):
-            me.takeoff()
-            dropoff()
-            me.land()
-        if kb.is_pressed("w"):
-            me.takeoff()
-            move(100, 0, 0)
-            time.sleep(2)
-            goHomeET()
-            me.land()
-        if kb.is_pressed("e"):
-            fwd += 100
-            me.takeoff()
-            time.sleep(2)
-            move(fwd, 0, 50)
-            goHomeET()
-            me.land()
-        if kb.is_pressed("s"):
-            me.takeoff()
-            time.sleep(1)
-            me.cam("down")
-            time.sleep(3)
-            move(100, 0, 0)
-            time.sleep(3)
-            move(0, -100, 0)
-            time.sleep(3)
-            goHomeET()
-            land()
+def turn(deg):
+    current_pos[3] += deg
+    me.rotate_clockwise(deg)
+
+
+while True:
+    if kb.is_pressed("f"):
+        me.takeoff()
+        dropoff()
+        me.land()
+    if kb.is_pressed("w"):
+        me.takeoff()
+        move(100, 0, 0)
+        turn(180)
+        goHomeET()
+        land()
+    if kb.is_pressed("e"):
+        me.takeoff()
+        move(100, 0, 0)
+        goHomeET()
+        land()
+    if kb.is_pressed("s"):
+        me.takeoff()
+        time.sleep(2)
+        move(100, 0, 0)
+        turn(90)
+        move(100, 0, 0)
+        turn(135)
+        move(141, 0, 0)
+        me.end()
+    if kb.is_pressed("space") or kb.is_pressed("shift"):
+        break
