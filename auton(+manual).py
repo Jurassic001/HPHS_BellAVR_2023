@@ -86,9 +86,13 @@ def dropoff():
     return current_pos[0], current_pos[1]
 
 
-def turn(deg):
-    current_pos[3] += deg
-    me.rotate_clockwise(deg)
+def turn(axis: str, deg):
+    if axis == "cw":
+        current_pos[3] += deg
+        me.rotate_clockwise(deg)
+    if axis == "ccw":
+        current_pos[3] -= deg
+        me.rotate_counter_clockwise(deg)
 
 
 while True:
@@ -99,22 +103,27 @@ while True:
     if kb.is_pressed("w"):
         me.takeoff()
         move(100, 0, 0)
-        turn(90)
+        turn("cw", 90)
         move(100, 0, 0)
         goHomeET()
         land()
     if kb.is_pressed("e"):
         me.takeoff()
         move(100, 0, 0)
-        goHomeET()
+        turn("cw", 90)
+        move(100, 0, 0)
+        turn("cw", 180)
+        move(100, 0, 0)
+        turn("ccw", 90)
+        move(100, 0, 0)
         land()
     if kb.is_pressed("s"):
         me.takeoff()
         time.sleep(2)
         move(100, 0, 0)
-        turn(90)
+        turn("cw", 90)
         move(100, 0, 0)
-        turn(135)
+        turn("cw", 135)
         move(141, 0, 0)
         me.end()
     if kb.is_pressed("space") or kb.is_pressed("shift"):
