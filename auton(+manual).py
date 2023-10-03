@@ -55,6 +55,8 @@ def move(x, y, z):
 
 
 def goHomeET():
+    # Use pythagorean theorem to get the distance between the starting point and the current location
+    # Use Tan-1(X distance / Y distance) to get the angle at which we must align ourselves as to go forward unto the starting point
     if current_pos[3] >= 360:
         me.rotate_counter_clockwise(current_pos[3] % 360)
     else:
