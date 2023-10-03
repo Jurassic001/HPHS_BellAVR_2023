@@ -1,9 +1,10 @@
 # Code by Max Haberer
 from customTello import CustomTello
-import time
-import cv2
 from threading import Thread
 import keyboard as kb
+import numpy as pymath
+import time
+import cv2
 
 
 # Connect to tello, get battery level, and set up the live video feed
@@ -19,6 +20,7 @@ frame_read = me.get_frame_read()
 
 # Set up the position tracking and video feed on/off boolean
 current_pos = [0, 0, 0, 180]
+me.set_speed(70)
 feed = True
 
 
@@ -48,22 +50,56 @@ def land():
     me.pipeDown()
 
 
-def move(x, y, z):
-    me.go_xyz_speed(x, y, z, 50)
-    current_pos[0], current_pos[1], current_pos[2] = current_pos[0]+int((x*1.1)), current_pos[1]+int((y*1.1)), current_pos[2]+z
-    return current_pos[0], current_pos[1], current_pos[2]
+def turn(deg):
+    if deg > 0:
+        me.rotate_clockwise(deg)
+    elif deg < 0:
+        me.rotate_counter_clockwise(-deg)
+    if current_pos[3] + deg < 0:
+        current_pos[3] = 360 - (pymath.absolute(deg) - current_pos[3])
+    else:
+        current_pos[3] += deg
+    if current_pos[3] >= 360:
+        current_pos[3] -= 360
+    time.sleep(0.25)
+
+
+def alt(updown):
+    if updown > 0:
+        me.move_up(updown)
+        current_pos[2] += updown
+    elif updown < 0:
+        me.move_down(-updown)
+        current_pos[2] -= updown
+    time.sleep(0.25)
+
+
+def move(distance):
+    me.move_forward(distance)
+    if current_pos[3] == 0:
+        current_pos[0] -= distance
+    if current_pos[3] == 90:
+        current_pos[1] -= distance
+    if current_pos[3] == 180:
+        current_pos[0] += distance
+    if current_pos[3] == 270:
+        current_pos[1] += distance
+    time.sleep(0.25)
 
 
 def goHomeET():
     # Use pythagorean theorem to get the distance between the starting point and the current location
     # Use Tan-1(X distance / Y distance) to get the angle at which we must align ourselves as to go forward unto the starting point
-    if current_pos[3] >= 360:
-        me.rotate_counter_clockwise(current_pos[3] % 360)
+    turnHome = int((90*((current_pos[3]/90)-1)))
+    if turnHome >= 0:
+        me.rotate_counter_clockwise(turnHome)
     else:
-        me.rotate_counter_clockwise(current_pos[3])
-    me.go_xyz_speed(current_pos[0], current_pos[1], current_pos[2], 50)
-    time.sleep(1)
+        me.rotate_clockwise(90)
+    # me.rotate_counter_clockwise(int(pymath.degrees(pymath.arctan((current_pos[0]/current_pos[1])))))
+    turn(-int(pymath.degrees(pymath.arctan((current_pos[0]/current_pos[1])))))
+    me.move_forward(int(1.05*pymath.sqrt(pymath.square(current_pos[0])+pymath.square(current_pos[1]))))
     current_pos[0], current_pos[1], current_pos[2] = 0, 0, 0
+    time.sleep(2)
 
 
 def dropoff():
@@ -88,15 +124,6 @@ def dropoff():
     return current_pos[0], current_pos[1]
 
 
-def turn(axis: str, deg):
-    if axis == "cw":
-        current_pos[3] += deg
-        me.rotate_clockwise(deg)
-    if axis == "ccw":
-        current_pos[3] -= deg
-        me.rotate_counter_clockwise(deg)
-
-
 while True:
     if kb.is_pressed("f"):
         me.takeoff()
@@ -104,29 +131,11 @@ while True:
         me.land()
     if kb.is_pressed("w"):
         me.takeoff()
-        move(100, 0, 0)
-        turn("cw", 90)
-        move(100, 0, 0)
+        time.sleep(1)
+        move(300)
+        turn(90)
+        move(200)
         goHomeET()
         land()
-    if kb.is_pressed("e"):
-        me.takeoff()
-        move(100, 0, 0)
-        turn("cw", 90)
-        move(100, 0, 0)
-        turn("cw", 180)
-        move(100, 0, 0)
-        turn("ccw", 90)
-        move(100, 0, 0)
-        land()
-    if kb.is_pressed("s"):
-        me.takeoff()
-        time.sleep(2)
-        move(100, 0, 0)
-        turn("cw", 90)
-        move(100, 0, 0)
-        turn("cw", 135)
-        move(141, 0, 0)
-        me.end()
     if kb.is_pressed("space") or kb.is_pressed("shift"):
         break
