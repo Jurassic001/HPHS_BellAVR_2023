@@ -22,10 +22,18 @@ frame_read = me.get_frame_read()
 current_pos = [0, 0, 0, 180]
 me.set_speed(70)
 feed = True
+speed_x = 0
+speed_y = 0
+velo_x = 0
+velo_y = 0
 
 
 def videofeed():
     global feed
+    global speed_x
+    global speed_y
+    global velo_x
+    global velo_y
     while feed:
         img = me.get_frame_read().frame
         img = cv2.resize(img, (600, 400))
@@ -33,15 +41,28 @@ def videofeed():
         cv2.imshow("Live Feed", img)
         cv2.moveWindow("Live Feed", 650, 0)
         cv2.setWindowProperty("Live Feed", cv2.WND_PROP_TOPMOST, 1)
+        """
         if kb.is_pressed("space"):
             me.pipeDown()
         if kb.is_pressed("shift"):
             me.emergency()
+        """
+        speed_x += me.get_speed_x()
+        speed_y += me.get_speed_y()
+        velo_x += me.get_acceleration_x()
+        velo_y += me.get_acceleration_y()
         # print("ToF reading: " + str(me.get_distance_tof() - 10))
 
 
 livestream = Thread(target=videofeed)
 livestream.start()
+
+
+def vals():
+    print(speed_x)
+    print(speed_y)
+    print(velo_x)
+    print(velo_y)
 
 
 def land():
@@ -124,7 +145,7 @@ def dropoff():
     return current_pos[0], current_pos[1]
 
 
-while True:
+while not kb.is_pressed("space"):
     if kb.is_pressed("f"):
         me.takeoff()
         dropoff()
@@ -137,5 +158,11 @@ while True:
         move(200)
         goHomeET()
         land()
-    if kb.is_pressed("space") or kb.is_pressed("shift"):
-        break
+    if kb.is_pressed("j"):
+        me.takeoff()
+        time.sleep(1)
+        land()
+
+while not kb.is_pressed("shift"):
+    land()
+me.emergency()
