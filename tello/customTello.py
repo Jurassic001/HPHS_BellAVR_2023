@@ -21,6 +21,7 @@ class CustomTello(Tello):
         if command == "land":
             print("Land command failed, killing all motors")
             self.emergency()
+            exit()
         self.raise_result_error(command, response)
         return False  # never reached
 

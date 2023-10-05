@@ -48,6 +48,8 @@ def land():
 
 
 def turn(deg):
+    if deg >= 360:
+        deg -= 360
     if deg > 0:
         me.rotate_clockwise(deg)
     elif deg < 0:
@@ -75,11 +77,11 @@ def move(distance):
     me.move_forward(distance)
     if current_pos[3] == 0:
         current_pos[0] -= distance
-    if current_pos[3] == 90:
+    elif current_pos[3] == 90:
         current_pos[1] -= distance
-    if current_pos[3] == 180:
+    elif current_pos[3] == 180:
         current_pos[0] += distance
-    if current_pos[3] == 270:
+    elif current_pos[3] == 270:
         current_pos[1] += distance
     time.sleep(0.25)
 
@@ -87,11 +89,31 @@ def move(distance):
 def goHomeET():
     # Use pythagorean theorem to get the distance between the starting point and the current location
     # Use Tan-1(X distance / Y distance) to get the angle at which we must align ourselves as to go forward unto the starting point
-    turnHome = int((90*((current_pos[3]/90)-1)))
-    if turnHome >= 0:
-        me.rotate_counter_clockwise(turnHome)
+    print("Current X val: " + str(current_pos[0]))
+    print("Current Y val: " + str(current_pos[1]))
+    print("Current Heading: " + str(current_pos[3]))
+    if current_pos[0] > 0 & current_pos[1] > 0:
+        print("Quad 1")
+        turnHome = int(current_pos[3] - 90)
+    elif current_pos[0] > 0 & current_pos[1] < 0:
+        print("Quad 2")
+        turnHome = int(current_pos[3])
+    elif current_pos[0] < 0 and current_pos[1] < 0:
+        print("Quad 3")
+        turnHome = int(current_pos[3] + 90)
+    elif current_pos[0] < 0 & current_pos[1] > 0:
+        print("Quad 4")
+        turnHome = int(current_pos[3] + 180)
+
+    turn(-turnHome)
+    """
+    if current_pos[3] > 90:
+        me.rotate_counter_clockwise(current_pos[3])
     else:
-        me.rotate_clockwise(90)
+        me.rotate_clockwise(current_pos[3])
+        # me.rotate_clockwise(90)
+        # me.rotate_clockwise(int(pymath.absolute(turnHome)-90))
+    """
     turn(-int(pymath.degrees(pymath.arctan((current_pos[0]/current_pos[1])))))
     me.move_forward(int(pymath.sqrt(pymath.square(current_pos[0])+pymath.square(current_pos[1]))))
     time.sleep(2)
@@ -133,7 +155,12 @@ while True:
         move(200)
         goHomeET()
         land()
-    if kb.is_pressed("j"):
+    if kb.is_pressed("s"):
         me.takeoff()
         time.sleep(1)
+        turn(180)
+        move(100)
+        turn(90)
+        move(100)
+        goHomeET()
         land()
