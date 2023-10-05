@@ -5,6 +5,25 @@ class CustomTello(Tello):
     def __init__(self):
         super().__init__()
 
+    def send_control_command(self, command: str, timeout: int = 7) -> bool:
+        """
+        Modified control command.
+        Will stop all motors if the land command fails.
+        """
+        response = "max retries exceeded"
+        for i in range(0, self.retry_count):
+            response = self.send_command_with_return(command, timeout=timeout)
+
+            if response.lower() == 'ok':
+                return True
+
+            self.LOGGER.debug("Command attempt #{} failed for command: '{}'".format(i, command))
+        if command == "land":
+            print("Land command failed, killing all motors")
+            self.emergency()
+        self.raise_result_error(command, response)
+        return False  # never reached
+
     def stop(self):
         """
         Hovers in the air. Supposedly.

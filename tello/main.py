@@ -18,22 +18,14 @@ frame_read = me.get_frame_read()
 # Set wifi name and password
 # me.set_wifi_credentials("4Runner", "tellorun")
 
-# Set up the position tracking and video feed on/off boolean
+# Set up the position tracking, movement speed, and video feed on/off toggle
 current_pos = [0, 0, 0, 180]
 me.set_speed(70)
 feed = True
-speed_x = 0
-speed_y = 0
-velo_x = 0
-velo_y = 0
 
 
 def videofeed():
     global feed
-    global speed_x
-    global speed_y
-    global velo_x
-    global velo_y
     while feed:
         img = me.get_frame_read().frame
         img = cv2.resize(img, (600, 400))
@@ -41,28 +33,12 @@ def videofeed():
         cv2.imshow("Live Feed", img)
         cv2.moveWindow("Live Feed", 650, 0)
         cv2.setWindowProperty("Live Feed", cv2.WND_PROP_TOPMOST, 1)
-        """
         if kb.is_pressed("space"):
             me.pipeDown()
-        if kb.is_pressed("shift"):
-            me.emergency()
-        """
-        speed_x += me.get_speed_x()
-        speed_y += me.get_speed_y()
-        velo_x += me.get_acceleration_x()
-        velo_y += me.get_acceleration_y()
-        # print("ToF reading: " + str(me.get_distance_tof() - 10))
 
 
 livestream = Thread(target=videofeed)
 livestream.start()
-
-
-def vals():
-    print(speed_x)
-    print(speed_y)
-    print(velo_x)
-    print(velo_y)
 
 
 def land():
@@ -116,11 +92,10 @@ def goHomeET():
         me.rotate_counter_clockwise(turnHome)
     else:
         me.rotate_clockwise(90)
-    # me.rotate_counter_clockwise(int(pymath.degrees(pymath.arctan((current_pos[0]/current_pos[1])))))
     turn(-int(pymath.degrees(pymath.arctan((current_pos[0]/current_pos[1])))))
-    me.move_forward(int(1.05*pymath.sqrt(pymath.square(current_pos[0])+pymath.square(current_pos[1]))))
-    current_pos[0], current_pos[1], current_pos[2] = 0, 0, 0
+    me.move_forward(int(pymath.sqrt(pymath.square(current_pos[0])+pymath.square(current_pos[1]))))
     time.sleep(2)
+    turn(int(pymath.degrees(pymath.arctan((current_pos[0] / current_pos[1]))))+90)
 
 
 def dropoff():
@@ -145,7 +120,7 @@ def dropoff():
     return current_pos[0], current_pos[1]
 
 
-while not kb.is_pressed("space"):
+while True:
     if kb.is_pressed("f"):
         me.takeoff()
         dropoff()
@@ -162,7 +137,3 @@ while not kb.is_pressed("space"):
         me.takeoff()
         time.sleep(1)
         land()
-
-while not kb.is_pressed("shift"):
-    land()
-me.emergency()
