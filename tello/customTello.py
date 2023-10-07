@@ -1,4 +1,5 @@
 from djitellopy import Tello
+import time
 
 
 class CustomTello(Tello):
@@ -24,6 +25,15 @@ class CustomTello(Tello):
             exit()
         self.raise_result_error(command, response)
         return False  # never reached
+
+    def takeoff(self):
+        """
+        Automatic takeoff.
+        Overridden so that the drone sleeps for one second after takeoff
+        """
+        self.send_control_command("takeoff", timeout=Tello.TAKEOFF_TIMEOUT)
+        self.is_flying = True
+        time.sleep(1)
 
     def stop(self):
         """

@@ -41,14 +41,24 @@ livestream = Thread(target=videofeed)
 livestream.start()
 
 
-def land():
-    global feed
-    feed = False
-    me.pipeDown()
+def setPosition():
+    global current_pos
+    current_pos = [0, 0, 0, 180]
+
+
+def land(state: str):
+    if state == "end":
+        global feed
+        feed = False
+        me.pipeDown()
+    elif state == "none":
+        me.land()
+    else:
+        print("Landing state not specified, maintaining flight")
 
 
 def turn(deg):
-    if deg >= 360:
+    while deg >= 360:
         deg -= 360
     if deg > 0:
         me.rotate_clockwise(deg)
@@ -87,37 +97,19 @@ def move(distance):
 
 
 def goHomeET():
-    # Use pythagorean theorem to get the distance between the starting point and the current location
-    # Use Tan-1(X distance / Y distance) to get the angle at which we must align ourselves as to go forward unto the starting point
-    print("Current X val: " + str(current_pos[0]))
-    print("Current Y val: " + str(current_pos[1]))
-    print("Current Heading: " + str(current_pos[3]))
-    if current_pos[0] > 0 & current_pos[1] > 0:
-        print("Quad 1")
-        turnHome = int(current_pos[3] - 90)
-    elif current_pos[0] > 0 & current_pos[1] < 0:
-        print("Quad 2")
-        turnHome = int(current_pos[3])
-    elif current_pos[0] < 0 and current_pos[1] < 0:
-        print("Quad 3")
-        turnHome = int(current_pos[3] + 90)
-    elif current_pos[0] < 0 & current_pos[1] > 0:
-        print("Quad 4")
-        turnHome = int(current_pos[3] + 180)
-
-    turn(-turnHome)
-    """
-    if current_pos[3] > 90:
-        me.rotate_counter_clockwise(current_pos[3])
+    if current_pos[1] > 0:
+        turnHome = int(90 - current_pos[3])
+    elif current_pos[1] < 0:
+        turnHome = int(90 + current_pos[3])
     else:
-        me.rotate_clockwise(current_pos[3])
-        # me.rotate_clockwise(90)
-        # me.rotate_clockwise(int(pymath.absolute(turnHome)-90))
-    """
-    turn(-int(pymath.degrees(pymath.arctan((current_pos[0]/current_pos[1])))))
-    me.move_forward(int(pymath.sqrt(pymath.square(current_pos[0])+pymath.square(current_pos[1]))))
+        turnHome = 0
+        land("none")
+    homeAngle = -int(pymath.degrees(pymath.arctan((current_pos[0] / current_pos[1]))) + turnHome)
+    turn(homeAngle)
+    me.move_forward(int(pymath.sqrt(pymath.square(current_pos[0]) + pymath.square(current_pos[1]))))
     time.sleep(2)
-    turn(int(pymath.degrees(pymath.arctan((current_pos[0] / current_pos[1]))))+90)
+    turn(-homeAngle + turnHome)
+    setPosition()
 
 
 def dropoff():
@@ -149,18 +141,31 @@ while True:
         me.land()
     if kb.is_pressed("w"):
         me.takeoff()
-        time.sleep(1)
         move(300)
         turn(90)
         move(200)
         goHomeET()
-        land()
+        land("none")
     if kb.is_pressed("s"):
         me.takeoff()
-        time.sleep(1)
         turn(180)
         move(100)
         turn(90)
         move(100)
         goHomeET()
-        land()
+        land("none")
+    if kb.is_pressed("a"):
+        me.takeoff()
+        move(200)
+        turn(-90)
+        move(150)
+        goHomeET()
+        land("none")
+    if kb.is_pressed("d"):
+        me.takeoff()
+        turn(180)
+        move(200)
+        turn(-90)
+        move(150)
+        goHomeET()
+        land("none")
