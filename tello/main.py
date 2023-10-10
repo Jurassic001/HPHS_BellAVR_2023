@@ -35,7 +35,7 @@ def videofeed():
         cv2.moveWindow("Live Feed", 650, 0)
         cv2.setWindowProperty("Live Feed", cv2.WND_PROP_TOPMOST, 1)
         if kb.is_pressed("space"):
-            me.pipeDown()
+            me.emergency()
             exit()
 
 
@@ -140,38 +140,7 @@ def dropoff():
 
 
 while True:
-    if kb.is_pressed("f"):
-        me.takeoff()
-        faceDeg(270)
-        faceDeg(180)
-        faceDeg(0)
-        faceDeg(90)
-        land("none")
     if kb.is_pressed("w"):
         me.takeoff()
         move(300)
-        goHomeET()
         land("end")
-    if kb.is_pressed("s"):
-        me.takeoff()
-        turn(180)
-        move(100)
-        turn(90)
-        move(100)
-        goHomeET()
-        land("none")
-    if kb.is_pressed("a"):
-        me.takeoff()
-        move(200)
-        turn(-90)
-        move(150)
-        goHomeET()
-        land("none")
-    if kb.is_pressed("d"):
-        me.takeoff()
-        turn(180)
-        move(200)
-        turn(-90)
-        move(150)
-        goHomeET()
-        land("none")
