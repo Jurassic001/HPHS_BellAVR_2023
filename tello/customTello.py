@@ -59,3 +59,4 @@ class CustomTello(Tello):
             self.land()
         if self.stream_on:
             self.streamoff()
+        print("You should press Ctrl+F2 NOW!!")
