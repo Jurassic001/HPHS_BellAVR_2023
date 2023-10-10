@@ -59,4 +59,3 @@ class CustomTello(Tello):
             self.land()
         if self.stream_on:
             self.streamoff()
-            exit()

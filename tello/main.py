@@ -36,6 +36,7 @@ def videofeed():
         cv2.setWindowProperty("Live Feed", cv2.WND_PROP_TOPMOST, 1)
         if kb.is_pressed("space"):
             me.pipeDown()
+            exit()
 
 
 livestream = Thread(target=videofeed)
@@ -51,7 +52,9 @@ def land(state: str):
     if state == "end":
         global feed
         feed = False
+        livestream.join()
         me.pipeDown()
+        exit()
     elif state == "none":
         me.land()
     else:
@@ -147,10 +150,8 @@ while True:
     if kb.is_pressed("w"):
         me.takeoff()
         move(300)
-        turn(90)
-        move(200)
         goHomeET()
-        land("none")
+        land("end")
     if kb.is_pressed("s"):
         me.takeoff()
         turn(180)
