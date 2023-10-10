@@ -73,6 +73,10 @@ def turn(deg):
     time.sleep(0.25)
 
 
+def faceDeg(angle):
+    turn(angle-current_pos[3])
+
+
 def alt(updown):
     if updown > 0:
         me.move_up(updown)
@@ -98,17 +102,14 @@ def move(distance):
 
 def goHomeET():
     if current_pos[1] > 0:
-        turnHome = int(90 - current_pos[3])
+        faceDeg(90)
     elif current_pos[1] < 0:
-        turnHome = int(90 + current_pos[3])
-    else:
-        turnHome = 0
-        land("none")
-    homeAngle = -int(pymath.degrees(pymath.arctan((current_pos[0] / current_pos[1]))) + turnHome)
+        faceDeg(270)
+    homeAngle = -int(pymath.degrees(pymath.arctan((current_pos[0] / current_pos[1]))))
     turn(homeAngle)
     me.move_forward(int(pymath.sqrt(pymath.square(current_pos[0]) + pymath.square(current_pos[1]))))
     time.sleep(2)
-    turn(-homeAngle + turnHome)
+    faceDeg(180)
     setPosition()
 
 
@@ -137,8 +138,11 @@ def dropoff():
 while True:
     if kb.is_pressed("f"):
         me.takeoff()
-        dropoff()
-        me.land()
+        faceDeg(270)
+        faceDeg(180)
+        faceDeg(0)
+        faceDeg(90)
+        land("none")
     if kb.is_pressed("w"):
         me.takeoff()
         move(300)
