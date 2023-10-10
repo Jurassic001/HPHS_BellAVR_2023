@@ -12,6 +12,7 @@ me = CustomTello()
 me.connect()
 print("Battery level: " + str(me.get_battery()) + "%")
 time.sleep(1)
+me.streamoff()
 me.streamon()
 frame_read = me.get_frame_read()
 
