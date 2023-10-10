@@ -118,29 +118,12 @@ def goHomeET():
 
 
 def dropoff():
-    # front flip average drift: 52 forward, 4 left
-    # back flip average drift: 32 backward, 7 right
     """
-    me.flip_forward()
-    current_pos[0] += 52
-    current_pos[1] += 4
-
-    me.flip_back()
-    current_pos[0] += -32
-    current_pos[1] += -7
+    the code to drop off the smoke jumper will go here
     """
-    # Experiment with left and right flips
-    me.flip_right()
-    """ 
-    # maybe this command to halt after flipping?
-    me.send_rc_control(0, 0, 0, 0)
-    """
-    # me.flip_left()
-    return current_pos[0], current_pos[1]
 
 
 while True:
-    if kb.is_pressed("w"):
-        me.takeoff()
-        move(300)
-        land("end")
+    me.takeoff()
+    # The real operation code will go here
+    land("end")
