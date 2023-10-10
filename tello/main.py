@@ -65,7 +65,7 @@ def turn(deg):
     elif deg < 0:
         me.rotate_counter_clockwise(-deg)
     if current_pos[3] + deg < 0:
-        current_pos[3] = 360 - (pymath.absolute(deg) - current_pos[3])
+        current_pos[3] = 360 - (int(pymath.absolute(deg)) - current_pos[3])
     else:
         current_pos[3] += deg
     if current_pos[3] >= 360:
@@ -74,7 +74,7 @@ def turn(deg):
 
 
 def faceDeg(angle):
-    turn(angle-current_pos[3])
+    turn(int(angle-current_pos[3]))
 
 
 def alt(updown):
