@@ -20,7 +20,7 @@ frame_read = me.get_frame_read()
 # me.set_wifi_credentials("4Runner", "tellorun")
 
 # Set up the position tracking, movement speed, and video feed on/off toggle
-current_pos = [0, 0, 0, 180]
+current_pos = [0, 0, 180]
 me.set_speed(70)
 feed = True
 
@@ -45,7 +45,7 @@ livestream.start()
 
 def setPosition():
     global current_pos
-    current_pos = [0, 0, 0, 180]
+    current_pos = [0, 0, 180]
 
 
 def land(state: str):
@@ -68,62 +68,89 @@ def turn(deg):
         me.rotate_clockwise(deg)
     elif deg < 0:
         me.rotate_counter_clockwise(-deg)
-    if current_pos[3] + deg < 0:
-        current_pos[3] = 360 - (int(pymath.absolute(deg)) - current_pos[3])
+    if current_pos[2] + deg < 0:
+        current_pos[2] = 360 - (int(pymath.absolute(deg)) - current_pos[2])
     else:
-        current_pos[3] += deg
-    if current_pos[3] >= 360:
-        current_pos[3] -= 360
+        current_pos[2] += deg
+    if current_pos[2] >= 360:
+        current_pos[2] -= 360
     time.sleep(0.25)
 
 
 def faceDeg(angle):
-    turn(int(angle-current_pos[3]))
+    turn(int(angle-current_pos[2]))
 
 
-def alt(updown):
-    if updown > 0:
-        me.move_up(updown)
-        current_pos[2] += updown
-    elif updown < 0:
-        me.move_down(-updown)
-        current_pos[2] -= updown
+def relativeHeight(altitude):
+    altitude -= me.get_height()
+    if altitude > 0:
+        me.move_up(altitude)
+    elif altitude < 0:
+        me.move_down(-altitude)
     time.sleep(0.25)
 
 
 def move(distance):
     me.move_forward(distance)
-    if current_pos[3] == 0:
+    if current_pos[2] == 0:
         current_pos[0] -= distance
-    elif current_pos[3] == 90:
+    elif current_pos[2] == 90:
         current_pos[1] -= distance
-    elif current_pos[3] == 180:
+    elif current_pos[2] == 180:
         current_pos[0] += distance
-    elif current_pos[3] == 270:
+    elif current_pos[2] == 270:
         current_pos[1] += distance
     time.sleep(0.25)
 
 
 def goHomeET():
-    if current_pos[1] > 0:
-        faceDeg(90)
-    elif current_pos[1] < 0:
-        faceDeg(270)
-    homeAngle = -int(pymath.degrees(pymath.arctan((current_pos[0] / current_pos[1]))))
-    turn(homeAngle)
-    me.move_forward(int(pymath.sqrt(pymath.square(current_pos[0]) + pymath.square(current_pos[1]))))
+    print("Attempting to return to origin point")
+    print("Current coordinates: (" + str(current_pos[0]) + "," + str(current_pos[1]) + ")")
+    if current_pos[0] != 0 & current_pos[1] != 0:
+        if current_pos[1] > 0:
+            faceDeg(90)
+        elif current_pos[1] < 0:
+            faceDeg(270)
+        print("Shoutout to the HPHS math department fr")
+        homeAngle = -int(pymath.degrees(pymath.arctan((current_pos[0] / current_pos[1]))))
+        turn(homeAngle)
+        me.move_forward(int(pymath.sqrt(pymath.square(current_pos[0]) + pymath.square(current_pos[1]))))
+    elif current_pos[1] == 0:
+        if current_pos[0] > 0:
+            faceDeg(0)
+            move(current_pos[0])
+        elif current_pos[0] < 0:
+            faceDeg(180)
+            move(-current_pos[0])
+    elif current_pos[0] == 0:
+        if current_pos[1] > 0:
+            faceDeg(90)
+            move(current_pos[1])
+        elif current_pos[1] < 0:
+            faceDeg(270)
+            move(-current_pos[1])
+    else:
+        print("Position Data Failure - Cannot Return Home")
     time.sleep(2)
     faceDeg(180)
+    relativeHeight(50)
     setPosition()
 
 
 def dropoff():
+    print("Kid named smokejumper: ")
     """
     the code to drop off the smoke jumper will go here
     """
 
 
 while True:
+    time.sleep(1)
     me.takeoff()
-    # The real operation code will go here
+    relativeHeight(120)
+    move(500)
+    relativeHeight(70)
+    dropoff()
+    relativeHeight(120)
+    goHomeET()
     land("end")
