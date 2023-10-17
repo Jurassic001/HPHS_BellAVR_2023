@@ -51,6 +51,17 @@ def setPosition():
     current_pos = [0, 0, 180]
 
 
+def waitUntil(targtime):
+    """
+    Wait until the target time is equal to the actual time
+    In the meantime we'll twiddle out thumbs
+    """
+    thumbs = 1
+    while targtime > time.time():
+        thumbs += 1
+        thumbs -= 1
+
+
 def land(state: str):
     if state == "end":
         global feed
@@ -145,6 +156,7 @@ def goHomeET(location: str):
 
 
 while auton:
+    targetTime = time.time() + 30
     time.sleep(1)
     me.takeoff()
     relativeHeight(110)
@@ -154,6 +166,10 @@ while auton:
     # this is where my smokejumper release would go... IF I HAD ONE
     goHomeET("Landing pad")
     land("none")
+    waitUntil(targetTime)
+    land("end")
+
+    me.takeoff()
     # wait until phase 2
     goHomeET("Firehouse")
     land("end")
