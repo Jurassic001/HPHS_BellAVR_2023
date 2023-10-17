@@ -118,12 +118,11 @@ def move(distance):
 
 
 def goHomeET(location: str):
+    print("Current coordinates: (" + str(current_pos[0]) + "," + str(current_pos[1]) + ")")
+    print("Attempting to return to " + location)
     if location == "Firehouse":
         current_pos[0] -= 33
-        print("Attempting to return to Firehouse")
-    if location == "Landing pad":
-        print("Attempting to return to Landing pad")
-    # print("Current coordinates: (" + str(current_pos[0]) + "," + str(current_pos[1]) + ")")
+
     if current_pos[0] != 0 & current_pos[1] != 0:
         if current_pos[1] > 0:
             faceDeg(90)
