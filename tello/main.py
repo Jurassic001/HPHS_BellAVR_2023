@@ -19,12 +19,15 @@ frame_read = me.get_frame_read()
 # Set wifi name and password
 # me.set_wifi_credentials("4Runner", "tellorun")
 
-# Set up the position tracking, movement speed, and video feed on/off toggle
+# Set up the position tracking list, speed value, video and autonomous booleans
 current_pos = [0, 0, 180]
 me.set_speed(70)
 feed = True
+auton = True
 
 
+# noinspection PyUnresolvedReferences
+# best way to fix an error is to ignore it
 def videofeed():
     global feed
     while feed:
@@ -103,17 +106,22 @@ def move(distance):
     time.sleep(0.25)
 
 
-def goHomeET():
-    print("Attempting to return to origin point")
-    print("Current coordinates: (" + str(current_pos[0]) + "," + str(current_pos[1]) + ")")
+def goHomeET(location: str):
+    if location == "Firehouse":
+        current_pos[0] -= 33
+        print("Attempting to return to Firehouse")
+    if location == "Landing pad":
+        print("Attempting to return to Landing pad")
+    # print("Current coordinates: (" + str(current_pos[0]) + "," + str(current_pos[1]) + ")")
     if current_pos[0] != 0 & current_pos[1] != 0:
         if current_pos[1] > 0:
             faceDeg(90)
         elif current_pos[1] < 0:
             faceDeg(270)
-        print("Shoutout to the HPHS math department fr")
+        print("Calculating origin direction")
         homeAngle = -int(pymath.degrees(pymath.arctan((current_pos[0] / current_pos[1]))))
         turn(homeAngle)
+        print("Calculating origin distance")
         me.move_forward(int(pymath.sqrt(pymath.square(current_pos[0]) + pymath.square(current_pos[1]))))
     elif current_pos[1] == 0:
         if current_pos[0] > 0:
@@ -133,24 +141,19 @@ def goHomeET():
         print("Position Data Failure - Cannot Return Home")
     time.sleep(2)
     faceDeg(180)
-    relativeHeight(50)
     setPosition()
 
 
-def dropoff():
-    print("Kid named smokejumper: ")
-    """
-    the code to drop off the smoke jumper will go here
-    """
-
-
-while True:
+while auton:
     time.sleep(1)
     me.takeoff()
-    relativeHeight(120)
-    move(500)
-    relativeHeight(70)
-    dropoff()
-    relativeHeight(120)
-    goHomeET()
+    relativeHeight(110)
+    move(358)
+    relativeHeight(80)
+    time.sleep(2)
+    # this is where my smokejumper release would go... IF I HAD ONE
+    goHomeET("Landing pad")
+    land("none")
+    # wait until phase 2
+    goHomeET("Firehouse")
     land("end")

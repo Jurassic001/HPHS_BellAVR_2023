@@ -1,3 +1,4 @@
+# Code by Max Haberer
 from djitellopy import Tello
 import time
 
