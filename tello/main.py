@@ -20,7 +20,7 @@ frame_read = me.get_frame_read()
 # me.set_wifi_credentials("4Runner", "tellorun")
 
 # Set up the position tracking list, speed value, video and autonomous booleans
-current_pos = [0, 0, 180]
+current_pos = [0, 0, 180, 0]
 me.set_speed(70)
 feed = True
 auton = True
@@ -48,7 +48,7 @@ livestream.start()
 
 def setPosition():
     global current_pos
-    current_pos = [0, 0, 180]
+    current_pos = [0, 0, 180, 0]
 
 
 def waitUntil(targtime):
@@ -56,10 +56,18 @@ def waitUntil(targtime):
     Wait until the target time is equal to the actual time
     In the meantime we'll twiddle out thumbs
     """
+    print("Waiting for " + str(targtime - time.time()) + " seconds")
     thumbs = 1
     while targtime > time.time():
         thumbs += 1
         thumbs -= 1
+
+
+def takeoff():
+    me.takeoff()
+    time.sleep(0.50)
+    current_pos[3] = me.get_height()
+    print("Height Calibrated")
 
 
 def land(state: str):
@@ -96,16 +104,16 @@ def faceDeg(angle):
 
 
 def relativeHeight(altitude):
-    altitude -= me.get_height()
+    altitude -= current_pos[3]
+    current_pos[3] += altitude
     if altitude > 0:
         me.move_up(altitude)
     elif altitude < 0:
         me.move_down(-altitude)
-    time.sleep(0.25)
+    time.sleep(1)
 
 
 def move(distance):
-    me.move_forward(distance)
     if current_pos[2] == 0:
         current_pos[0] -= distance
     elif current_pos[2] == 90:
@@ -114,6 +122,10 @@ def move(distance):
         current_pos[0] += distance
     elif current_pos[2] == 270:
         current_pos[1] += distance
+    while distance > 500:
+        me.move_forward(500)
+        distance -= 500
+    me.move_forward(distance)
     time.sleep(0.25)
 
 
@@ -121,9 +133,8 @@ def goHomeET(location: str):
     print("Current coordinates: (" + str(current_pos[0]) + "," + str(current_pos[1]) + ")")
     print("Attempting to return to " + location)
     if location == "Firehouse":
-        current_pos[0] -= 33
-
-    if current_pos[0] != 0 & current_pos[1] != 0:
+        current_pos[0] -= 130
+    if current_pos[0] != 0 and current_pos[1] != 0:
         if current_pos[1] > 0:
             faceDeg(90)
         elif current_pos[1] < 0:
@@ -132,7 +143,7 @@ def goHomeET(location: str):
         homeAngle = -int(pymath.degrees(pymath.arctan((current_pos[0] / current_pos[1]))))
         turn(homeAngle)
         print("Calculating origin distance")
-        me.move_forward(int(pymath.sqrt(pymath.square(current_pos[0]) + pymath.square(current_pos[1]))))
+        move(int(pymath.sqrt(pymath.square(current_pos[0]) + pymath.square(current_pos[1]))))
     elif current_pos[1] == 0:
         if current_pos[0] > 0:
             faceDeg(0)
@@ -156,8 +167,9 @@ def goHomeET(location: str):
 
 while auton:
     targetTime = time.time() + 30
+    """
     time.sleep(1)
-    me.takeoff()
+    takeoff()
     relativeHeight(110)
     move(358)
     relativeHeight(80)
@@ -165,10 +177,17 @@ while auton:
     # this is where my smokejumper release would go... IF I HAD ONE
     goHomeET("Landing pad")
     land("none")
+    """
     waitUntil(targetTime)
-    land("end")
-
-    me.takeoff()
-    # wait until phase 2
-    goHomeET("Firehouse")
+    takeoff()
+    turn(180)
+    relativeHeight(300-80)
+    move(650)
+    turn(90)
+    move(80)
+    turn(90)
+    relativeHeight(230-80)
+    time.sleep(10)
+    relativeHeight(250 - 80)
+    goHomeET("Landing pad")
     land("end")
