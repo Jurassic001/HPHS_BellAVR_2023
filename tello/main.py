@@ -36,13 +36,9 @@ def videofeed():
         img = cv2.resize(img, (600, 400))
         cv2.waitKey(1)
         cv2.imshow("Live Feed", img)
-        cv2.moveWindow("Live Feed", 650, 0)
-        cv2.setWindowProperty("Live Feed", cv2.WND_PROP_TOPMOST, 1)
         if kb.is_pressed("backspace"):
             me.emergency()
             exit()
-        if kb.is_pressed("space"):
-            auton = False
 
 
 livestream = Thread(target=videofeed)
@@ -193,29 +189,3 @@ while auton:
     relativeHeight(250 - 80)
     goHomeET("Landing pad")
     land("end")
-
-while True:
-    lr, fb, ud, yv = 0, 0, 0, 0
-    speed = 500
-    if kb.is_pressed("a"):
-        lr = -speed
-    elif kb.is_pressed("d"):
-        lr = speed
-    if kb.is_pressed("w"):
-        fb = speed
-    elif kb.is_pressed("s"):
-        fb = -speed
-    if kb.is_pressed("r"):
-        ud = speed
-    elif kb.is_pressed("f"):
-        ud = -speed
-    if kb.is_pressed("q"):
-        yv = -speed
-    elif kb.is_pressed("e"):
-        yv = speed
-    if kb.is_pressed("l"):
-        me.land()
-        time.sleep(3)
-    if kb.is_pressed("t"):
-        me.takeoff()
-    me.send_rc_control(lr, fb, ud, yv)
