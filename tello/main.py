@@ -1,6 +1,7 @@
 # Code by Max Haberer
 from customTello import CustomTello
 from threading import Thread
+from KeyboardMovement import keyboard_control
 import keyboard as kb
 import numpy as pymath
 import time
@@ -30,6 +31,7 @@ auton = True
 # best way to fix an error is to ignore it
 def videofeed():
     global feed
+    global auton
     while feed:
         img = me.get_frame_read().frame
         img = cv2.resize(img, (600, 400))
@@ -37,9 +39,11 @@ def videofeed():
         cv2.imshow("Live Feed", img)
         cv2.moveWindow("Live Feed", 650, 0)
         cv2.setWindowProperty("Live Feed", cv2.WND_PROP_TOPMOST, 1)
-        if kb.is_pressed("space"):
+        if kb.is_pressed("backspace"):
             me.emergency()
             exit()
+        if kb.is_pressed("space"):
+            auton = False
 
 
 livestream = Thread(target=videofeed)
@@ -167,9 +171,9 @@ def goHomeET(location: str):
 
 while auton:
     targetTime = time.time() + 30
-    """
     time.sleep(1)
     takeoff()
+    time.sleep(3)
     relativeHeight(110)
     move(358)
     relativeHeight(80)
@@ -177,7 +181,6 @@ while auton:
     # this is where my smokejumper release would go... IF I HAD ONE
     goHomeET("Landing pad")
     land("none")
-    """
     waitUntil(targetTime)
     takeoff()
     turn(180)
@@ -191,3 +194,5 @@ while auton:
     relativeHeight(250 - 80)
     goHomeET("Landing pad")
     land("end")
+
+keyboard_control()
