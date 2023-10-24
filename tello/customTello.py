@@ -54,7 +54,6 @@ class CustomTello(Tello):
     def pipeDown(self):
         """
         Shorter and sweeter version of end()
-        Also if self.land() fails then we deactivate all motors
         """
         if self.is_flying:
             self.land()

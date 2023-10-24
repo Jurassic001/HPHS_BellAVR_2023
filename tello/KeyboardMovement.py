@@ -36,6 +36,14 @@ def keyboard_control():
         time.sleep(3)
     if kb.is_pressed("t"):
         me.takeoff()
+    if kb.is_pressed("backspace"):
+        me.emergency()
+    if kb.is_pressed("space"):
+        me.end()
+    if kb.is_pressed("down"):
+        me.cam("down")
+    elif kb.is_pressed("up"):
+        me.cam("fwd")
     me.send_rc_control(lr, fb, ud, yv)
 
 
