@@ -130,9 +130,9 @@ def move(distance):
 
 def goHomeET(location: str):
     print("Current coordinates: (" + str(current_pos[0]) + "," + str(current_pos[1]) + ")")
-    print("Attempting to return to " + location)
     if location == "Firehouse":
         current_pos[0] -= 130
+    print("Attempting to return to " + location)
     if current_pos[0] != 0 and current_pos[1] != 0:
         if current_pos[1] > 0:
             faceDeg(90)
@@ -187,5 +187,5 @@ while auton:
     relativeHeight(230-80)
     time.sleep(10)
     relativeHeight(250 - 80)
-    goHomeET("Landing pad")
+    goHomeET("Firehouse")
     land("end")
