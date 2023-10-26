@@ -36,7 +36,7 @@ def videofeed():
         img = cv2.resize(img, (600, 400))
         cv2.waitKey(1)
         cv2.imshow("Live Feed", img)
-        if kb.is_pressed("backspace"):
+        if kb.is_pressed("space"):
             me.emergency()
             exit()
 
@@ -64,9 +64,8 @@ def waitUntil(targtime):
 
 def takeoff():
     me.takeoff()
-    time.sleep(0.50)
     current_pos[3] = me.get_height()
-    print("Height Calibrated")
+    print("Height Calibrated: (" + str(current_pos[3]) + ")")
 
 
 def land(state: str):
@@ -166,17 +165,19 @@ def goHomeET(location: str):
 
 while auton:
     targetTime = time.time() + 30
-    time.sleep(1)
     takeoff()
-    time.sleep(3)
+    me.set_speed(40)
     relativeHeight(110)
     move(358)
     relativeHeight(80)
+    time.sleep(1)
+    me.flip_back()
     time.sleep(2)
-    # this is where my smokejumper release would go... IF I HAD ONE
+    relativeHeight(110)
     goHomeET("Landing pad")
     land("none")
     waitUntil(targetTime)
+    """
     takeoff()
     turn(180)
     relativeHeight(300-80)
@@ -188,4 +189,5 @@ while auton:
     time.sleep(10)
     relativeHeight(250 - 80)
     goHomeET("Firehouse")
+    """
     land("end")
