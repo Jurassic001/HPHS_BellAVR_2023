@@ -128,7 +128,7 @@ def move(distance):
 def goHomeET(location: str):
     print("Current coordinates: (" + str(current_pos[0]) + "," + str(current_pos[1]) + ")")
     if location == "Firehouse":
-        current_pos[0] += 130
+        current_pos[0] += 120
     print("Attempting to return to " + location)
     if current_pos[0] != 0 and current_pos[1] != 0:
         if current_pos[1] > 0:
@@ -186,6 +186,6 @@ move(80)
 turn(90)
 relativeHeight(230)
 time.sleep(10)
-relativeHeight(250)
+relativeHeight(300)
 goHomeET("Firehouse")
 land("end")
