@@ -7,7 +7,9 @@ class CustomTello(Tello):
     def __init__(self):
         super().__init__()
 
-    def send_control_command(self, command: str, timeout: int = 7) -> bool:
+    RESPONSE_TIMEOUT = 15
+
+    def send_control_command(self, command: str, timeout: int = RESPONSE_TIMEOUT) -> bool:
         """
         Modified control command.
         Will stop all motors if the land command fails.

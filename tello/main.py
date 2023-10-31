@@ -23,14 +23,12 @@ frame_read = me.get_frame_read()
 current_pos = [0, 0, 180, 0]
 me.set_speed(70)
 feed = True
-auton = True
 
 
 # noinspection PyUnresolvedReferences
 # best way to fix an error is to ignore it
 def videofeed():
     global feed
-    global auton
     while feed:
         img = me.get_frame_read().frame
         img = cv2.resize(img, (600, 400))
@@ -47,13 +45,13 @@ livestream.start()
 
 def setPosition():
     global current_pos
-    current_pos = [0, 0, 180, 0]
+    current_pos[0], current_pos[1], current_pos[2], current_pos[3] = 0, 0, me.get_height(), 0
 
 
 def waitUntil(targtime):
     """
     Wait until the target time is equal to the actual time
-    In the meantime we'll twiddle out thumbs
+    In the meantime we'll twiddle our thumbs
     """
     print("Waiting for " + str(targtime - time.time()) + " seconds")
     thumbs = 1
@@ -121,8 +119,8 @@ def move(distance):
     elif current_pos[2] == 270:
         current_pos[1] += distance
     while distance > 500:
-        me.move_forward(500)
-        distance -= 500
+        me.move_forward(480)
+        distance -= 480
     me.move_forward(distance)
     time.sleep(0.25)
 
@@ -130,7 +128,7 @@ def move(distance):
 def goHomeET(location: str):
     print("Current coordinates: (" + str(current_pos[0]) + "," + str(current_pos[1]) + ")")
     if location == "Firehouse":
-        current_pos[0] -= 130
+        current_pos[0] += 130
     print("Attempting to return to " + location)
     if current_pos[0] != 0 and current_pos[1] != 0:
         if current_pos[1] > 0:
@@ -163,31 +161,31 @@ def goHomeET(location: str):
     setPosition()
 
 
-while auton:
-    targetTime = time.time() + 30
-    takeoff()
-    me.set_speed(40)
-    relativeHeight(110)
-    move(358)
-    relativeHeight(80)
-    time.sleep(1)
-    me.flip_back()
-    time.sleep(2)
-    relativeHeight(110)
-    goHomeET("Landing pad")
-    land("none")
-    waitUntil(targetTime)
-    """
-    takeoff()
-    turn(180)
-    relativeHeight(300-80)
-    move(650)
-    turn(90)
-    move(80)
-    turn(90)
-    relativeHeight(230-80)
-    time.sleep(10)
-    relativeHeight(250 - 80)
-    goHomeET("Firehouse")
-    """
-    land("end")
+me.set_speed(40)
+foo = 1
+print("Tello Autonomus Control Online")
+print("Press M to start")
+while not kb.is_pressed("m"):
+    foo += 1
+    foo -= 1
+print("Goodluck o7")
+takeoff()
+relativeHeight(110)
+move(358)
+relativeHeight(80)
+time.sleep(1)
+me.flip_back()
+time.sleep(3)
+relativeHeight(110)
+turn(180)
+move(348)
+relativeHeight(300)
+move(650)
+turn(90)
+move(80)
+turn(90)
+relativeHeight(230)
+time.sleep(10)
+relativeHeight(250)
+goHomeET("Firehouse")
+land("end")
