@@ -34,7 +34,7 @@ def videofeed():
         img = cv2.resize(img, (600, 400))
         cv2.waitKey(1)
         cv2.imshow("Live Feed", img)
-        if kb.is_pressed("space"):
+        if kb.is_pressed("backspace"):
             me.emergency()
             exit()
 
