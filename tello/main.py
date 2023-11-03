@@ -19,7 +19,7 @@ frame_read = me.get_frame_read()
 # Set wifi name and password
 # me.set_wifi_credentials("4Runner", "tellorun")
 
-# Set up the position tracking list, speed value, video and autonomous booleans
+# Set up the position tracking list, speed value, and video feed boolean
 current_pos = [0, 0, 180, 0]
 me.set_speed(70)
 feed = True
