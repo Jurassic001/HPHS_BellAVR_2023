@@ -60,10 +60,11 @@ def waitUntil(targtime):
         thumbs -= 1
 
 
-def takeoff():
+def takeoff(speed: int):
     me.takeoff()
     current_pos[3] = me.get_height()
     print("Height Calibrated: (" + str(current_pos[3]) + ")")
+    me.set_speed(speed)
 
 
 def land(state: str):
@@ -169,16 +170,14 @@ while not kb.is_pressed("m"):
     foo -= 1
 print("o7")
 targetTime = time.time() + 30
-takeoff()
-me.set_speed(75)
+takeoff(75)
 relativeHeight(110)
 move(100)
 turn(180)
 move(100)
 land("none")
 waitUntil(targetTime)
-takeoff()
-me.set_speed(40)
+takeoff(40)
 relativeHeight(300)
 move(650)
 turn(90)
