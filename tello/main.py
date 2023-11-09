@@ -161,24 +161,24 @@ def goHomeET(location: str):
     setPosition()
 
 
-me.set_speed(40)
 foo = 1
 print("Tello Autonomus Control Online")
 print("Press M to start")
 while not kb.is_pressed("m"):
     foo += 1
     foo -= 1
-print("Goodluck o7")
+print("o7")
+targetTime = time.time() + 30
 takeoff()
+me.set_speed(75)
 relativeHeight(110)
-move(358)
-relativeHeight(80)
-time.sleep(1)
-me.flip_back()
-time.sleep(3)
-relativeHeight(110)
+move(100)
 turn(180)
-move(348)
+move(100)
+land("none")
+waitUntil(targetTime)
+takeoff()
+me.set_speed(40)
 relativeHeight(300)
 move(650)
 turn(90)
