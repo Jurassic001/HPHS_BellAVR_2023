@@ -21,7 +21,6 @@ frame_read = me.get_frame_read()
 
 # Set up the position tracking list, speed value, and video feed boolean
 current_pos = [0, 0, 180, 0]
-me.set_speed(70)
 feed = True
 
 
@@ -58,6 +57,16 @@ def waitUntil(targtime):
     while targtime > time.time():
         thumbs += 1
         thumbs -= 1
+
+
+def waitUntilKeypressed(key: str):
+    """
+    Wait until a specified key is pressed
+    """
+    foo = 1
+    while not kb.is_pressed(key):
+        foo += 1
+        foo -= 1
 
 
 def takeoff(speed: int):
@@ -162,21 +171,17 @@ def goHomeET(location: str):
     setPosition()
 
 
-foo = 1
 print("Tello Autonomus Control Online")
 print("Press M to start")
-while not kb.is_pressed("m"):
-    foo += 1
-    foo -= 1
+waitUntilKeypressed("m")
 print("o7")
-targetTime = time.time() + 30
-takeoff(75)
-relativeHeight(110)
-move(100)
+takeoff(10)
+move(20)
 turn(180)
-move(100)
+move(20)
 land("none")
-waitUntil(targetTime)
+print("Press M when the AVR enters the residential area")
+waitUntilKeypressed("m")
 takeoff(40)
 relativeHeight(300)
 move(650)
