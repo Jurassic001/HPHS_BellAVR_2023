@@ -72,7 +72,7 @@ def waitUntilKeypressed(key: str):
 def takeoff(speed: int):
     me.takeoff()
     current_pos[3] = me.get_height()
-    print("Height Calibrated: (" + str(current_pos[3]) + ")")
+    print("Height Calibrated: " + str(current_pos[3]))
     me.set_speed(speed)
 
 
@@ -178,6 +178,7 @@ print("o7")
 takeoff(10)
 move(20)
 turn(180)
+# me.move_right(20)
 move(20)
 land("none")
 print("Press M when the AVR enters the residential area")
