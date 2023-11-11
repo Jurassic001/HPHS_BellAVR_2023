@@ -184,7 +184,8 @@ me.cam("down")
 time.sleep(2)
 me.flip_back()
 time.sleep(2)
-me.cam("up")
+me.cam("fwd")
+relativeHeight(140)
 while True:
     lr, fb, ud, yv = 0, 0, 0, 0
     speed = 500
