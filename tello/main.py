@@ -69,11 +69,11 @@ def waitUntilKeypressed(key: str):
         foo -= 1
 
 
-def takeoff(speed: int):
+def takeoff(spd: int):
     me.takeoff()
     current_pos[3] = me.get_height()
     print("Height Calibrated: " + str(current_pos[3]))
-    me.set_speed(speed)
+    me.set_speed(spd)
 
 
 def land(state: str):
@@ -175,9 +175,55 @@ print("Tello Autonomus Control Online")
 print("Press M to start")
 waitUntilKeypressed("m")
 print("o7")
+
+takeoff(40)
+relativeHeight(140)
+"""move(358)
+relativeHeight(80)
+me.cam("down")
+time.sleep(2)"""
+me.flip_back()
+time.sleep(2)
+me.cam("up")
+while True:
+    lr, fb, ud, yv = 0, 0, 0, 0
+    speed = 500
+    if kb.is_pressed("a"):
+        lr = -speed
+    elif kb.is_pressed("d"):
+        lr = speed
+    if kb.is_pressed("w"):
+        fb = speed
+    elif kb.is_pressed("s"):
+        fb = -speed
+    if kb.is_pressed("r"):
+        ud = speed
+    elif kb.is_pressed("f"):
+        ud = -speed
+    if kb.is_pressed("q"):
+        yv = -speed
+    elif kb.is_pressed("e"):
+        yv = speed
+    if kb.is_pressed("l"):
+        me.land()
+        time.sleep(3)
+    if kb.is_pressed("t"):
+        me.takeoff()
+    if kb.is_pressed("backspace"):
+        me.emergency()
+    if kb.is_pressed("space"):
+        me.end()
+        break
+    if kb.is_pressed("down"):
+        me.cam("down")
+    elif kb.is_pressed("up"):
+        me.cam("fwd")
+    if kb.is_pressed("m"):
+        me.flip_back()
+    me.send_rc_control(lr, fb, ud, yv)
+"""
 takeoff(10)
 move(20)
-turn(180)
 # me.move_right(20)
 move(20)
 land("none")
@@ -185,6 +231,7 @@ print("Press M when the AVR enters the residential area")
 waitUntilKeypressed("m")
 takeoff(40)
 relativeHeight(300)
+turn(180)
 move(650)
 turn(90)
 move(80)
@@ -194,3 +241,4 @@ time.sleep(10)
 relativeHeight(300)
 goHomeET("Firehouse")
 land("end")
+"""
