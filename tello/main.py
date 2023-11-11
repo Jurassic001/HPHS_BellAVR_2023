@@ -178,10 +178,10 @@ print("o7")
 
 takeoff(40)
 relativeHeight(140)
-"""move(358)
+move(358)
 relativeHeight(80)
 me.cam("down")
-time.sleep(2)"""
+time.sleep(2)
 me.flip_back()
 time.sleep(2)
 me.cam("up")
