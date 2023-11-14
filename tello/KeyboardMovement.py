@@ -59,7 +59,6 @@ def manual():
         img = cv2.resize(img, (600, 400))
         cv2.waitKey(1)
         cv2.imshow("Live Feed", img)
-        keyboard_control()
 
 
 livestream = Thread(target=manual)
