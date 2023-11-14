@@ -180,14 +180,8 @@ takeoff(80)
 relativeHeight(130)
 move(358)
 relativeHeight(80)
-me.cam("down")
 me.flip_back()
 time.sleep(1)
-me.cam("fwd")
-from KeyboardMovement import keyboard_control
-keyboard_control()
-
-"""
 while True:
     lr, fb, ud, yv = 0, 0, 0, 0
     speed = 500
@@ -224,4 +218,3 @@ while True:
     if kb.is_pressed("m"):
         me.flip_back()
     me.send_rc_control(lr, fb, ud, yv)
-"""
