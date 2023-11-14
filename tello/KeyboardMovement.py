@@ -40,10 +40,13 @@ def keyboard_control():
         me.emergency()
     if kb.is_pressed("space"):
         me.end()
+        exit()
     if kb.is_pressed("down"):
         me.cam("down")
     elif kb.is_pressed("up"):
         me.cam("fwd")
+    if kb.is_pressed("m"):
+        me.flip_back()
     me.send_rc_control(lr, fb, ud, yv)
 
 

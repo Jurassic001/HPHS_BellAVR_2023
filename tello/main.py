@@ -176,16 +176,18 @@ print("Press M to start")
 waitUntilKeypressed("m")
 print("o7")
 
-takeoff(40)
-relativeHeight(140)
+takeoff(80)
+relativeHeight(130)
 move(358)
 relativeHeight(80)
 me.cam("down")
-time.sleep(2)
-"""me.flip_back()
-time.sleep(2)
+me.flip_back()
+time.sleep(1)
 me.cam("fwd")
-relativeHeight(140)"""
+from KeyboardMovement import keyboard_control
+keyboard_control()
+
+"""
 while True:
     lr, fb, ud, yv = 0, 0, 0, 0
     speed = 500
@@ -214,7 +216,7 @@ while True:
         me.emergency()
     if kb.is_pressed("space"):
         me.end()
-        break
+        exit()
     if kb.is_pressed("down"):
         me.cam("down")
     elif kb.is_pressed("up"):
@@ -222,24 +224,4 @@ while True:
     if kb.is_pressed("m"):
         me.flip_back()
     me.send_rc_control(lr, fb, ud, yv)
-"""
-takeoff(10)
-move(20)
-# me.move_right(20)
-move(20)
-land("none")
-print("Press M when the AVR enters the residential area")
-waitUntilKeypressed("m")
-takeoff(40)
-relativeHeight(300)
-turn(180)
-move(650)
-turn(90)
-move(80)
-turn(90)
-relativeHeight(230)
-time.sleep(10)
-relativeHeight(300)
-goHomeET("Firehouse")
-land("end")
 """
