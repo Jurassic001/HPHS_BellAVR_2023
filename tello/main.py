@@ -215,6 +215,12 @@ while True:
         me.cam("down")
     elif kb.is_pressed("up"):
         me.cam("fwd")
+    if kb.is_pressed("k+w"):
+        me.flip_forward()
+    elif kb.is_pressed("k+a"):
+        me.flip_left()
+    elif kb.is_pressed("k+d"):
+        me.flip_right()
     if kb.is_pressed("m"):
         me.flip_back()
     me.send_rc_control(lr, fb, ud, yv)
