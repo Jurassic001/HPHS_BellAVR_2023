@@ -30,7 +30,11 @@ def videofeed():
     global feed
     while feed:
         img = me.get_frame_read().frame
-        img = cv2.resize(img, (600, 400))
+        # img = cv2.resize(img, (600, 400))
+        cv2.resize(img, (1200, 800))
+        if me.camera_position == "down":
+            cv2.rotate(img, cv2.ROTATE_90_COUNTERCLOCKWISE)
+        cv2.moveWindow(img, 360, 140)
         cv2.waitKey(1)
         cv2.imshow("Live Feed", img)
         if kb.is_pressed("backspace"):
@@ -78,6 +82,7 @@ def takeoff(spd: int):
 
 def land(state: str):
     if state == "end":
+        print("And Alexander wept, for there were no more worlds to conquer.")
         global feed
         feed = False
         livestream.join()
@@ -175,7 +180,6 @@ print("Tello Autonomus Control Online")
 print("Press M to start")
 waitUntilKeypressed("m")
 print("o7")
-
 takeoff(80)
 relativeHeight(130)
 move(358)
@@ -202,14 +206,16 @@ while True:
     elif kb.is_pressed("e"):
         yv = speed
     if kb.is_pressed("l"):
-        me.land()
-        time.sleep(3)
+        land("none")
+        # me.land()
     if kb.is_pressed("t"):
-        me.takeoff()
+        takeoff(100)
+        # me.takeoff()
     if kb.is_pressed("backspace"):
         me.emergency()
     if kb.is_pressed("space"):
-        me.end()
+        land("end")
+        # me.end()
         exit()
     if kb.is_pressed("down"):
         me.cam("down")
