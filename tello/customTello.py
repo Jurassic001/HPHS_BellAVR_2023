@@ -8,6 +8,7 @@ class CustomTello(Tello):
         super().__init__()
 
     RESPONSE_TIMEOUT = 15
+    camera_position = "fwd"
 
     def send_control_command(self, command: str, timeout: int = RESPONSE_TIMEOUT) -> bool:
         """
@@ -50,8 +51,10 @@ class CustomTello(Tello):
         """
         if angle == "fwd":
             self.send_command_with_return("downvision 0")
+            self.camera_position = "fwd"
         if angle == "down":
             self.send_command_with_return("downvision 1")
+            self.camera_position = "down"
 
     def pipeDown(self):
         """
