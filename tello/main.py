@@ -10,7 +10,6 @@ import cv2
 # Initialize the tello object, connect to the tello, print its battery level, and set up some stuff for the video feed
 tello = CustomTello()
 tello.connect()
-print("Battery level: " + str(tello.get_battery()) + "%")
 time.sleep(1)
 tello.streamoff()
 tello.streamon()
@@ -26,25 +25,35 @@ feed = True
 # cv2 causes a bunch of "cannot find refrence in __init__.py" errors, but they don't actually cause issues (afaik), so we just ignore them
 def videofeed():
     """
-    Constantly get frames from the tello's camera, also fixes the downward-facing camera being misaligned.
-    Also will shut off all motors if backspace is pressed.
+    Constantly get frames from the tello's camera and displays them, will shut off all motors if backspace is pressed.
 
     :return: Void
     """
     global feed
     while feed:
         img = tello.get_frame_read().frame
-        img = cv2.resize(img, (600, 400))
+        img = cv2.resize(img, (900, 600))
         cv2.waitKey(1)
         cv2.imshow("Tello Interface Program (TIP)", img)
-        # cv2.moveWindow("Tello Interface Program (TIP)", 360, 0)
         if kb.is_pressed("backspace"):
             tello.emergency()
             exit()
 
 
 livestream = Thread(target=videofeed)
-livestream.start()
+
+
+# noinspection PyUnresolvedReferences
+def startup():
+    """
+    Starts the thread for the video feed, prints the startup message and battery %, and moves the video feed to the top right.
+
+    :return: Void
+    """
+    livestream.start()
+    print("Welcome to the Tello Interface Program (TIP)")
+    print("Battery level: " + str(tello.get_battery()) + "%")
+    cv2.moveWindow("Tello Interface Program (TIP)", 350, 0)
 
 
 def setWifiCreds():
@@ -308,7 +317,7 @@ def display_controls():
 
     :return: Void
     """
-    img = pymath.zeros((400, 100, 3), dtype=np.uint8)
+    img = pymath.zeros((400, 350, 3), dtype=pymath.uint8)
     controls_text = [
         "Controls:",
         "  W: Move Forward",
@@ -333,6 +342,7 @@ def display_controls():
     for i, text in enumerate(controls_text):
         cv2.putText(img, text, (10, 20 * (i + 1)), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1, cv2.LINE_AA)
     cv2.imshow("Controls", img)
+    cv2.moveWindow("Controls", 0, 0)
     cv2.waitKey(1)
 
 
@@ -396,7 +406,7 @@ def keyboard_control():
 
 
 # Here it all comes together
-print("Welcome to the Tello Interface Program (TIP)")
+startup()
 print("Press the M key to run phase 1 auton + manual")
 print("Press Enter to initiate manual control")
 if keychecks_eitheror("m", "enter") == "m":
