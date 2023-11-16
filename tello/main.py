@@ -315,7 +315,7 @@ def display_controls():
         "  Left Arrow: Flip Left",
         "  Right Arrow: Flip Right",
         "  Down Arrow: Flip Backward",
-        "  Z: End Manual Control"
+        "  0: End Manual Control"
     ]
     for i, text in enumerate(controls_text):
         cv2.putText(img, text, (10, 20 * (i + 1)), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1, cv2.LINE_AA)
@@ -373,9 +373,9 @@ def keyboard_control():
             tello.flip_right()
         elif kb.is_pressed("down"):
             tello.flip_back()
-        if kb.is_pressed("Z"):
-            print("Are you sure you want to end manual control? Press Z again to confirm.")
-            if keychecks_timeout("Z", 5):
+        if kb.is_pressed("0"):
+            print("Are you sure you want to end manual control? Press 0 again to confirm.")
+            if keychecks_timeout("0", 5):
                 print("Manual Control: Offline")
                 # noinspection PyUnresolvedReferences
                 cv2.destroyWindow("Controls")
