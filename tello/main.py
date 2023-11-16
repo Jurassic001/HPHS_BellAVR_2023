@@ -47,6 +47,9 @@ livestream.start()
 
 
 def setPosition():
+    """
+    Sets X, Y, and Angle position values to 0. Sets height value to whatever the current height is
+    """
     global current_pos
     current_pos[0], current_pos[1], current_pos[2], current_pos[3] = 0, 0, me.get_height(), 0
 
@@ -107,7 +110,7 @@ def turn(deg):
         current_pos[2] += deg
     if current_pos[2] >= 360:
         current_pos[2] -= 360
-    time.sleep(0.25)
+    time.sleep(0.2)
 
 
 def faceDeg(angle):
@@ -121,7 +124,7 @@ def relativeHeight(altitude):
         me.move_up(altitude)
     elif altitude < 0:
         me.move_down(-altitude)
-    time.sleep(1)
+    time.sleep(0.1)
 
 
 def move(distance: int):
@@ -192,6 +195,54 @@ def goHomeET(location: str):
     setPosition()
 
 
+def keyboard_control():
+    print("Manual Control Online")
+    while True:
+        lr, fb, ud, yv = 0, 0, 0, 0
+        speed = 500
+        if kb.is_pressed("a"):
+            lr = -speed
+        elif kb.is_pressed("d"):
+            lr = speed
+        if kb.is_pressed("w"):
+            fb = speed
+        elif kb.is_pressed("s"):
+            fb = -speed
+        if kb.is_pressed("r"):
+            ud = speed
+        elif kb.is_pressed("f"):
+            ud = -speed
+        if kb.is_pressed("q"):
+            yv = -speed
+        elif kb.is_pressed("e"):
+            yv = speed
+        if kb.is_pressed("l"):
+            land("none")
+            # me.land()
+        if kb.is_pressed("t"):
+            takeoff(100)
+            # me.takeoff()
+        if kb.is_pressed("backspace"):
+            me.emergency()
+        if kb.is_pressed("space"):
+            land("end")
+            # me.end()
+            exit()
+        if kb.is_pressed("down"):
+            me.cam("down")
+        elif kb.is_pressed("up"):
+            me.cam("fwd")
+        if kb.is_pressed("k+w"):
+            me.flip_forward()
+        elif kb.is_pressed("k+a"):
+            me.flip_left()
+        elif kb.is_pressed("k+d"):
+            me.flip_right()
+        if kb.is_pressed("m"):
+            me.flip_back()
+        me.send_rc_control(lr, fb, ud, yv)
+
+
 print("Tello Autonomus Control Online")
 print("Press M to start")
 waitUntilKeypressed("m")
@@ -202,47 +253,7 @@ move(358)
 relativeHeight(80)
 me.flip_back()
 time.sleep(1)
-while True:
-    lr, fb, ud, yv = 0, 0, 0, 0
-    speed = 500
-    if kb.is_pressed("a"):
-        lr = -speed
-    elif kb.is_pressed("d"):
-        lr = speed
-    if kb.is_pressed("w"):
-        fb = speed
-    elif kb.is_pressed("s"):
-        fb = -speed
-    if kb.is_pressed("r"):
-        ud = speed
-    elif kb.is_pressed("f"):
-        ud = -speed
-    if kb.is_pressed("q"):
-        yv = -speed
-    elif kb.is_pressed("e"):
-        yv = speed
-    if kb.is_pressed("l"):
-        land("none")
-        # me.land()
-    if kb.is_pressed("t"):
-        takeoff(100)
-        # me.takeoff()
-    if kb.is_pressed("backspace"):
-        me.emergency()
-    if kb.is_pressed("space"):
-        land("end")
-        # me.end()
-        exit()
-    if kb.is_pressed("down"):
-        me.cam("down")
-    elif kb.is_pressed("up"):
-        me.cam("fwd")
-    if kb.is_pressed("k+w"):
-        me.flip_forward()
-    elif kb.is_pressed("k+a"):
-        me.flip_left()
-    elif kb.is_pressed("k+d"):
-        me.flip_right()
-    if kb.is_pressed("m"):
-        me.flip_back()
-    me.send_rc_control(lr, fb, ud, yv)
+relativeHeight(130)
+move_back(358)
+land("none")
+keyboard_control()

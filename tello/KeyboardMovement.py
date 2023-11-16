@@ -14,6 +14,7 @@ frame_read = me.get_frame_read()
 
 
 def keyboard_control():
+    print("Manual Control Online")
     while True:
         lr, fb, ud, yv = 0, 0, 0, 0
         speed = 500
@@ -34,19 +35,27 @@ def keyboard_control():
         elif kb.is_pressed("e"):
             yv = speed
         if kb.is_pressed("l"):
+            # land("none")
             me.land()
-            time.sleep(3)
         if kb.is_pressed("t"):
+            # takeoff(100)
             me.takeoff()
         if kb.is_pressed("backspace"):
             me.emergency()
         if kb.is_pressed("space"):
+            # land("end")
             me.end()
             exit()
         if kb.is_pressed("down"):
             me.cam("down")
         elif kb.is_pressed("up"):
             me.cam("fwd")
+        if kb.is_pressed("k+w"):
+            me.flip_forward()
+        elif kb.is_pressed("k+a"):
+            me.flip_left()
+        elif kb.is_pressed("k+d"):
+            me.flip_right()
         if kb.is_pressed("m"):
             me.flip_back()
         me.send_rc_control(lr, fb, ud, yv)
