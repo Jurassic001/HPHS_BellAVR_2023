@@ -319,25 +319,25 @@ def keyboard_control():
             yv = -speed
         elif kb.is_pressed("e"):
             yv = speed
-        if kb.is_pressed("l"):
+        if kb.is_pressed("o"):
             land("none")
-        if kb.is_pressed("t"):
+        if kb.is_pressed("p"):
             takeoff(100)
         if kb.is_pressed("backspace"):
             tello.emergency()
         if kb.is_pressed("space"):
             land("end")
-        if kb.is_pressed("down"):
+        if kb.is_pressed("k+s"):
             tello.cam("down")
-        elif kb.is_pressed("up"):
+        elif kb.is_pressed("k+w"):
             tello.cam("fwd")
-        if kb.is_pressed("k+w"):
+        if kb.is_pressed("up"):
             tello.flip_forward()
-        elif kb.is_pressed("k+a"):
+        elif kb.is_pressed("left"):
             tello.flip_left()
-        elif kb.is_pressed("k+d"):
+        elif kb.is_pressed("right"):
             tello.flip_right()
-        if kb.is_pressed("m"):
+        elif kb.is_pressed("down"):
             tello.flip_back()
         if kb.is_pressed("0"):
             print("Are you sure you want to end manual control?")
