@@ -36,6 +36,12 @@ def videofeed():
         cv2.waitKey(1)
         cv2.imshow("Tello Interface Program (TIP)", img)
         cv2.moveWindow("Tello Interface Program (TIP)", 500, 0)
+        if tello.camera_angle == -90:
+            cv2.rotate("Tello Interface Program (TIP)", cv2.ROTATE_90_CLOCKWISE)
+            tello.camera_angle += 90
+        elif tello.camera_angle == 90:
+            cv2.rotate("Tello Interface Program (TIP)", cv2.ROTATE_90_COUNTERCLOCKWISE)
+            tello.camera_angle -= 90
         if kb.is_pressed("backspace"):
             tello.emergency()
             exit()
@@ -116,20 +122,6 @@ def keychecks_eitheror(key1: str, key2: str):
             return key1
         elif kb.is_pressed(key2):
             return key2
-
-
-# noinspection PyUnresolvedReferences
-def camera(angle: str):
-    if angle == tello.camera_position:
-        print("Error, camera is already facing that direction.")
-    elif angle == "fwd":
-        tello.cam(angle)
-        cv2.rotate("Tello Interface Program (TIP)", cv2.ROTATE_90_CLOCKWISE)
-    elif angle == "down":
-        tello.cam(angle)
-        cv2.rotate("Tello Interface Program (TIP)", cv2.ROTATE_90_COUNTERCLOCKWISE)
-    else:
-        print("Camera angle not recognized")
 
 
 def takeoff(spd: int):
@@ -374,9 +366,9 @@ def keyboard_control():
         if kb.is_pressed("space"):
             land("end")
         if kb.is_pressed("k+s"):
-            camera("down")
+            tello.cam("down")
         elif kb.is_pressed("k+w"):
-            camera("fwd")
+            tello.cam("fwd")
         if kb.is_pressed("up"):
             tello.flip_forward()
         elif kb.is_pressed("left"):
@@ -408,9 +400,10 @@ if keychecks_eitheror("m", "enter") == "m":
     relativeHeight(130)
     move(358)
     relativeHeight(80)
-    camera("down")
+    tello.cam("down")
     tello.flip_back()
     time.sleep(1)
+    tello.cam("up")
     relativeHeight(130)
     move_back(358)
     land("none")
