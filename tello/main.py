@@ -330,6 +330,7 @@ def keyboard_control():
             print("Are you sure you want to end manual control?")
             print("Press 0 again to confirm. You have 5 seconds.")
             if waitUntilKeypressed("0", 5):
+                print("Manual Control Offline")
                 break
         tello.send_rc_control(lr, fb, ud, yv)
 
