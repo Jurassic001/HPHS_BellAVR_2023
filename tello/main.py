@@ -36,12 +36,14 @@ def videofeed():
         img = tello.get_frame_read().frame
         # img = cv2.resize(img, (600, 400))
         # remember you need to be able to see the console
-        cv2.resize(img, (1200, 800))
+        # cv2.resize(img, (1200, 800))
+        cv2.resize(img, (640, 360))
         if tello.camera_position == "down":
             cv2.rotate(img, cv2.ROTATE_90_COUNTERCLOCKWISE)
         cv2.moveWindow(img, 360, 0)
         cv2.waitKey(1)
         cv2.imshow("Tello Interface Program (TIP)", img)
+        # cv2.moveWindow("Tello Interface Program (TIP)", 360, 0)
         if kb.is_pressed("backspace"):
             tello.emergency()
             exit()
@@ -300,7 +302,7 @@ def display_controls():
 
     :return: Void
     """
-    img = np.zeros((100, 400, 3), dtype=np.uint8)
+    img = np.zeros((400, 100, 3), dtype=np.uint8)
     controls_text = [
         "Controls:",
         "  W: Move Forward",
