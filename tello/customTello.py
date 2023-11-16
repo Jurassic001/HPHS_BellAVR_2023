@@ -9,7 +9,6 @@ class CustomTello(Tello):
 
     RESPONSE_TIMEOUT = 15
     camera_position = "fwd"
-    camera_angle = 0
 
     def send_control_command(self, command: str, timeout: int = RESPONSE_TIMEOUT) -> bool:
         """
@@ -55,11 +54,9 @@ class CustomTello(Tello):
         if angle == "fwd":
             self.send_command_with_return("downvision 0")
             self.camera_position = "fwd"
-            self.camera_angle -= 90
         elif angle == "down":
             self.send_command_with_return("downvision 1")
             self.camera_position = "down"
-            self.camera_angle += 90
         else:
             print("Camera angle not recognized")
 

@@ -33,12 +33,8 @@ def videofeed():
     while feed:
         img = tello.get_frame_read().frame
         img = cv2.resize(img, (750, 500))
-        if tello.camera_angle == -90:
-            img = cv2.rotate(img, cv2.ROTATE_90_CLOCKWISE)
-            tello.camera_angle += 90
-        elif tello.camera_angle == 90:
+        if tello.camera_position == "down":
             img = cv2.rotate(img, cv2.ROTATE_90_COUNTERCLOCKWISE)
-            tello.camera_angle -= 90
         cv2.waitKey(1)
         cv2.imshow("Tello Interface Program (TIP)", img)
         cv2.moveWindow("Tello Interface Program (TIP)", 500, 0)
