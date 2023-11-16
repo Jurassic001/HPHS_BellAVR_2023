@@ -7,38 +7,43 @@ import time
 import cv2
 
 
-# Connect to tello, get battery level, and set up the live video feed
-me = CustomTello()
-me.connect()
-print("Battery level: " + str(me.get_battery()) + "%")
+# Initialize the tello object, connect to the tello, print its battery level, and set up some stuff for the video feed
+tello = CustomTello()
+tello.connect()
+print("Battery level: " + str(tello.get_battery()) + "%")
 time.sleep(1)
-me.streamoff()
-me.streamon()
-frame_read = me.get_frame_read()
+tello.streamoff()
+tello.streamon()
+frame_read = tello.get_frame_read()
 
-# Set wifi name and password
-# me.set_wifi_credentials("4Runner", "tellorun")
 
-# Set up the position tracking list, speed value, and video feed boolean
+# Set up the position tracking list and video feed boolean
 current_pos = [0, 0, 180, 0]
 feed = True
 
 
 # noinspection PyUnresolvedReferences
-# best way to fix an error is to ignore it
+# cv2 causes a bunch of "cannot find refrence in __init__.py" errors, but they don't actually cause issues (afaik), so we just ignore them
 def videofeed():
+    """
+    Constantly get frames from the tello's camera, also fixes the downward-facing camera being misaligned.
+    Also will shut off all motors if backspace is pressed.
+
+    :return: Void
+    """
     global feed
     while feed:
-        img = me.get_frame_read().frame
+        img = tello.get_frame_read().frame
         # img = cv2.resize(img, (600, 400))
+        # remember you need to be able to see the console
         cv2.resize(img, (1200, 800))
-        if me.camera_position == "down":
+        if tello.camera_position == "down":
             cv2.rotate(img, cv2.ROTATE_90_COUNTERCLOCKWISE)
         cv2.moveWindow(img, 360, 140)
         cv2.waitKey(1)
-        cv2.imshow("Live Feed", img)
+        cv2.imshow("Tello Interface Program (TIP)", img)
         if kb.is_pressed("backspace"):
-            me.emergency()
+            tello.emergency()
             exit()
 
 
@@ -46,64 +51,110 @@ livestream = Thread(target=videofeed)
 livestream.start()
 
 
+def setWifiCreds():
+    """
+    Sets tello's wifi signal name and password. Signal name will appear as "TELLO-{NAME}".
+    Calling this function will restart the Tello.
+
+    :return: Void
+    """
+    NAME = "4Runner"
+    PASSWORD = "tellorun"
+    tello.set_wifi_credentials(NAME, PASSWORD)
+
+
 def setPosition():
     """
-    Sets X, Y, and Angle position values to 0. Sets height value to whatever the current height is
+    Sets X and Y values to 0, Angle value to 180°. Sets height value to current height.
+
+    :return: Void
     """
     global current_pos
-    current_pos[0], current_pos[1], current_pos[2], current_pos[3] = 0, 0, me.get_height(), 0
+    current_pos[0], current_pos[1], current_pos[2], current_pos[3] = 0, 0, 180, tello.get_height()
 
 
 def waitUntil(targtime):
     """
-    Wait until the target time is equal to the actual time
-    In the meantime we'll twiddle our thumbs
+    Wait until a predetermined target time is passed. Good for timing out autonomous phases during competitions.
+    If the target time has been passed a message will print and the code will continue as normal.
+
+    :param targtime: Should be set beforehand using the syntax "time.time() + {Number of seconds}".
+    :return: Void
     """
-    print("Waiting for " + str(targtime - time.time()) + " seconds")
-    thumbs = 1
-    while targtime > time.time():
-        thumbs += 1
-        thumbs -= 1
+    if targtime > time.time():
+        print("Waiting for " + str(targtime - time.time()) + " seconds")
+        time.sleep(targtime - time.time())
+    else:
+        print("ERROR: Attempted to wait for " + str(targtime - time.time()) + " seconds")
 
 
-def waitUntilKeypressed(key: str):
+def waitUntilKeypressed(key: str, timeout: int):
     """
-    Wait until a specified key is pressed
+    Wait until a specified key is pressed, or until the request times out.
+
+    :param key: Any key, formatted as {"key_name"}.
+    :param timeout: Should be in seconds. A value <= 0 will lead to the program locking up until the desired key is pressed.
+    :return: True if the key is pressed, False if the request times out.
     """
-    foo = 1
-    while not kb.is_pressed(key):
-        foo += 1
-        foo -= 1
+    if timeout <= 0:
+        print("Waiting for the \"" + key + "\" key to be pressed.")
+        kb.wait(key)
+        return True
+    else:
+        print("Waiting for the {" + key + "} to be pressed. Will wait for " + str(timeout) + " seconds.")
+        targtime = time.time() + timeout
+        while targtime < time.time():
+            if kb.is_pressed(key):
+                return True
+        return False
 
 
 def takeoff(spd: int):
-    me.takeoff()
-    current_pos[3] = me.get_height()
+    """
+    My own takeoff command, that sets speed and calibrates height upon takeoff.
+
+    :param spd: Must be less than or equal to 100 and greater than 0
+    :return: Void
+    """
+    tello.takeoff()
+    current_pos[3] = tello.get_height()
     print("Height Calibrated: " + str(current_pos[3]))
-    me.set_speed(spd)
+    tello.set_speed(spd)
 
 
 def land(state: str):
+    """
+    My own land command, with two different states depending on if you're landing temporarily or shutting off
+
+    :param state: "none" for temp landing, "end" for landing + shutoff
+    :return: Void
+    """
     if state == "end":
         print("And Alexander wept, for there were no more worlds to conquer.")
         global feed
         feed = False
         livestream.join()
-        me.pipeDown()
+        tello.pipeDown()
         exit()
     elif state == "none":
-        me.land()
+        tello.land()
     else:
         print("Landing state not specified, maintaining flight")
 
 
 def turn(deg):
+    """
+    Command that turns the specificed distance in degrees, positive for clockwise, negative for counter-clockwise
+
+    :param deg: Positive for clockwise, negative for counter-clockwise. Should be a multiple of 90 if you intend to use special navigation functions.
+    :return: Void
+    """
     while deg >= 360:
         deg -= 360
     if deg > 0:
-        me.rotate_clockwise(deg)
+        tello.rotate_clockwise(deg)
     elif deg < 0:
-        me.rotate_counter_clockwise(-deg)
+        tello.rotate_counter_clockwise(-deg)
     if current_pos[2] + deg < 0:
         current_pos[2] = 360 - (int(pymath.absolute(deg)) - current_pos[2])
     else:
@@ -114,20 +165,38 @@ def turn(deg):
 
 
 def faceDeg(angle):
+    """
+    Faces the desired angle. Not much else to it.
+
+    :param angle: Just a humble degree measurement
+    :return: Void
+    """
     turn(int(angle-current_pos[2]))
 
 
 def relativeHeight(altitude):
+    """
+    Goes up or down in an attempt to reach a specific height. Height is relative to the floor and calibrated on takeoff.
+
+    :param altitude: Any value except a negative or a high (500+) number should work. Do not try and descend into the floor.
+    :return: Void
+    """
     altitude -= current_pos[3]
     current_pos[3] += altitude
     if altitude > 0:
-        me.move_up(altitude)
+        tello.move_up(altitude)
     elif altitude < 0:
-        me.move_down(-altitude)
+        tello.move_down(-altitude)
     time.sleep(0.1)
 
 
 def move(distance: int):
+    """
+    Move the specified number of centimeters forward. Will keep track of position assuming you're facing a cardinal direction.
+
+    :param distance: Can handle any non-negative number. Bigger distances will be split into multiple commands because tello's can't comprehend distances of over 500 cm.
+    :return: Void
+    """
     if current_pos[2] == 0:
         current_pos[0] -= distance
     elif current_pos[2] == 90:
@@ -137,13 +206,19 @@ def move(distance: int):
     elif current_pos[2] == 270:
         current_pos[1] += distance
     while distance > 500:
-        me.move_forward(480)
+        tello.move_forward(480)
         distance -= 480
-    me.move_forward(distance)
+    tello.move_forward(distance)
     time.sleep(0.1)
 
 
 def move_back(distance: int):
+    """
+    Move the specified number of centimeters backwards. Will keep track of position assuming you're facing a cardinal direction.
+
+    :param distance: Can handle any non-negative number. Bigger distances will be split into multiple commands because tello's can't comprehend distances of over 500 cm.
+    :return: Void
+    """
     if current_pos[2] == 0:
         current_pos[0] += distance
     elif current_pos[2] == 90:
@@ -153,13 +228,19 @@ def move_back(distance: int):
     elif current_pos[2] == 270:
         current_pos[1] -= distance
     while distance > 500:
-        me.move_back(480)
+        tello.move_back(480)
         distance -= 480
-    me.move_back(distance)
+    tello.move_back(distance)
     time.sleep(0.1)
 
 
 def goHomeET(location: str):
+    """
+    Can take the tello home from anywhere on the field. Can designate multiple targets to return to, and assign appropriate offset values.
+
+    :param location: Can be used to designate different return targets and their respective positions relative to the tello's starting position.
+    :return: Void
+    """
     print("Current coordinates: (" + str(current_pos[0]) + "," + str(current_pos[1]) + ")")
     if location == "Firehouse":
         current_pos[0] += 120
@@ -196,6 +277,12 @@ def goHomeET(location: str):
 
 
 def keyboard_control():
+    """
+    Function that, when activated, will enable manual control over the tello.
+    Press 0 to end manual control. It will ask you to confirm cancellation.
+
+    :return: Void
+    """
     print("Manual Control Online")
     while True:
         lr, fb, ud, yv = 0, 0, 0, 0
@@ -223,35 +310,39 @@ def keyboard_control():
             takeoff(100)
             # me.takeoff()
         if kb.is_pressed("backspace"):
-            me.emergency()
+            tello.emergency()
         if kb.is_pressed("space"):
             land("end")
             # me.end()
-            exit()
         if kb.is_pressed("down"):
-            me.cam("down")
+            tello.cam("down")
         elif kb.is_pressed("up"):
-            me.cam("fwd")
+            tello.cam("fwd")
         if kb.is_pressed("k+w"):
-            me.flip_forward()
+            tello.flip_forward()
         elif kb.is_pressed("k+a"):
-            me.flip_left()
+            tello.flip_left()
         elif kb.is_pressed("k+d"):
-            me.flip_right()
+            tello.flip_right()
         if kb.is_pressed("m"):
-            me.flip_back()
-        me.send_rc_control(lr, fb, ud, yv)
+            tello.flip_back()
+        if kb.is_pressed("0"):
+            print("Are you sure you want to end manual control?")
+            print("Press 0 again to confirm. You have 5 seconds.")
+            if waitUntilKeypressed("0", 5):
+                break
+        tello.send_rc_control(lr, fb, ud, yv)
 
 
-print("Tello Autonomus Control Online")
+# Here it all comes together
 print("Press M to start")
-waitUntilKeypressed("m")
+waitUntilKeypressed("m", 0)
 print("o7")
 takeoff(80)
 relativeHeight(130)
 move(358)
 relativeHeight(80)
-me.flip_back()
+tello.flip_back()
 time.sleep(1)
 relativeHeight(130)
 move_back(358)
