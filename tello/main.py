@@ -32,28 +32,17 @@ def videofeed():
     global feed
     while feed:
         img = tello.get_frame_read().frame
-        img = cv2.resize(img, (900, 600))
+        img = cv2.resize(img, (750, 500))
         cv2.waitKey(1)
         cv2.imshow("Tello Interface Program (TIP)", img)
+        cv2.moveWindow("Tello Interface Program (TIP)", 500, 0)
         if kb.is_pressed("backspace"):
             tello.emergency()
             exit()
 
 
 livestream = Thread(target=videofeed)
-
-
-# noinspection PyUnresolvedReferences
-def startup():
-    """
-    Starts the thread for the video feed, prints the startup message and battery %, and moves the video feed to the top right.
-
-    :return: Void
-    """
-    livestream.start()
-    print("Welcome to the Tello Interface Program (TIP)")
-    print("Battery level: " + str(tello.get_battery()) + "%")
-    cv2.moveWindow("Tello Interface Program (TIP)", 350, 0)
+livestream.start()
 
 
 def setWifiCreds():
@@ -133,12 +122,14 @@ def keychecks_eitheror(key1: str, key2: str):
 def camera(angle: str):
     if angle == tello.camera_position:
         print("Error, camera is already facing that direction.")
-    if angle == "fwd":
+    elif angle == "fwd":
         tello.cam(angle)
         cv2.rotate("Tello Interface Program (TIP)", cv2.ROTATE_90_CLOCKWISE)
-    if angle == "down":
+    elif angle == "down":
         tello.cam(angle)
         cv2.rotate("Tello Interface Program (TIP)", cv2.ROTATE_90_COUNTERCLOCKWISE)
+    else:
+        print("Camera angle not recognized")
 
 
 def takeoff(spd: int):
@@ -406,7 +397,9 @@ def keyboard_control():
 
 
 # Here it all comes together
-startup()
+print("Welcome to the Tello Interface Program (TIP)")
+print("Battery level: " + str(tello.get_battery()) + "%")
+print("")
 print("Press the M key to run phase 1 auton + manual")
 print("Press Enter to initiate manual control")
 if keychecks_eitheror("m", "enter") == "m":
