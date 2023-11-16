@@ -34,13 +34,7 @@ def videofeed():
     global feed
     while feed:
         img = tello.get_frame_read().frame
-        # img = cv2.resize(img, (600, 400))
-        # remember you need to be able to see the console
-        # cv2.resize(img, (1200, 800))
-        cv2.resize(img, (640, 360))
-        if tello.camera_position == "down":
-            cv2.rotate(img, cv2.ROTATE_90_COUNTERCLOCKWISE)
-        cv2.moveWindow(img, 360, 0)
+        img = cv2.resize(img, (600, 400))
         cv2.waitKey(1)
         cv2.imshow("Tello Interface Program (TIP)", img)
         # cv2.moveWindow("Tello Interface Program (TIP)", 360, 0)
@@ -124,6 +118,18 @@ def keychecks_eitheror(key1: str, key2: str):
             return key1
         elif kb.is_pressed(key2):
             return key2
+
+
+# noinspection PyUnresolvedReferences
+def camera(angle: str):
+    if angle == tello.camera_position:
+        print("Error, camera is already facing that direction.")
+    if angle == "fwd":
+        tello.cam(angle)
+        cv2.rotate("Tello Interface Program (TIP)", cv2.ROTATE_90_CLOCKWISE)
+    if angle == "down":
+        tello.cam(angle)
+        cv2.rotate("Tello Interface Program (TIP)", cv2.ROTATE_90_COUNTERCLOCKWISE)
 
 
 def takeoff(spd: int):
@@ -302,7 +308,7 @@ def display_controls():
 
     :return: Void
     """
-    img = np.zeros((400, 100, 3), dtype=np.uint8)
+    img = pymath.zeros((400, 100, 3), dtype=np.uint8)
     controls_text = [
         "Controls:",
         "  W: Move Forward",
@@ -367,9 +373,9 @@ def keyboard_control():
         if kb.is_pressed("space"):
             land("end")
         if kb.is_pressed("k+s"):
-            tello.cam("down")
+            camera("down")
         elif kb.is_pressed("k+w"):
-            tello.cam("fwd")
+            camera("fwd")
         if kb.is_pressed("up"):
             tello.flip_forward()
         elif kb.is_pressed("left"):
@@ -399,6 +405,7 @@ if keychecks_eitheror("m", "enter") == "m":
     relativeHeight(130)
     move(358)
     relativeHeight(80)
+    camera("down")
     tello.flip_back()
     time.sleep(1)
     relativeHeight(130)
