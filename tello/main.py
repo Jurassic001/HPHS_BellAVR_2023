@@ -292,6 +292,42 @@ def goHomeET(location: str):
     setPosition()
 
 
+# noinspection PyUnresolvedReferences
+# Same cv2 issue as videofeed(), same fix
+def display_controls():
+    """
+    Displays the keybinds for manual control.
+
+    :return: Void
+    """
+    img = np.zeros((100, 400, 3), dtype=np.uint8)
+    controls_text = [
+        "Controls:",
+        "  W: Move Forward",
+        "  S: Move Backward",
+        "  A: Move Left",
+        "  D: Move Right",
+        "  R: Move Up",
+        "  F: Move Down",
+        "  Q: Rotate Counter-Clockwise",
+        "  E: Rotate Clockwise",
+        "  O: Land",
+        "  P: Takeoff",
+        "  Space: Land and Shutdown",
+        "  K + W: Set Camera Forward",
+        "  K + S: Set Camera Downward",
+        "  Up Arrow: Flip Forward",
+        "  Left Arrow: Flip Left",
+        "  Right Arrow: Flip Right",
+        "  Down Arrow: Flip Backward",
+        "  0: End Manual Control"
+    ]
+    for i, text in enumerate(controls_text):
+        cv2.putText(img, text, (10, 20 * (i + 1)), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1, cv2.LINE_AA)
+    cv2.imshow("Controls", img)
+    cv2.waitKey(1)
+
+
 def keyboard_control():
     """
     Function that, when activated, will enable manual control over the tello.
@@ -299,7 +335,8 @@ def keyboard_control():
 
     :return: Void
     """
-    print("Manual Control Online")
+    print("Manual Control: Online")
+    display_controls()
     while True:
         lr, fb, ud, yv = 0, 0, 0, 0
         speed = 500
@@ -343,7 +380,9 @@ def keyboard_control():
             print("Are you sure you want to end manual control?")
             print("Press 0 again to confirm. You have 5 seconds.")
             if keychecks_timeout("0", 5):
-                print("Manual Control Offline")
+                print("Manual Control: Offline")
+                # noinspection PyUnresolvedReferences
+                cv2.destroyWindow("Controls")
                 break
         tello.send_rc_control(lr, fb, ud, yv)
 
