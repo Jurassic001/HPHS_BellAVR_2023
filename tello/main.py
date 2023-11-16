@@ -35,11 +35,14 @@ def videofeed():
         img = cv2.resize(img, (750, 500))
         if tello.camera_position == "down":
             img = cv2.rotate(img, cv2.ROTATE_90_COUNTERCLOCKWISE)
-            img = cv2.resize(img, (750, 500))
-        cv2.putText(img, "Battery level " + str(tello.get_battery()) + "%", (0, 0), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 0), 2, cv2.LINE_AA)
+            img = cv2.resize(img, (500, 500))
+        cv2.putText(img, "Battery level: " + str(tello.get_battery()) + "%", (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 0), 2, cv2.LINE_AA)
         cv2.waitKey(1)
         cv2.imshow("Tello Interface Program (TIP)", img)
-        cv2.moveWindow("Tello Interface Program (TIP)", 500, 0)
+        if tello.camera_position == "fwd":
+            cv2.moveWindow("Tello Interface Program (TIP)", 500, 0)
+        else:
+            cv2.moveWindow("Tello Interface Program (TIP)", 750, 0)
         if kb.is_pressed("backspace"):
             tello.emergency()
             exit()
