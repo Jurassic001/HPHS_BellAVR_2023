@@ -92,7 +92,7 @@ def keychecks_timeout(key: str, timeout: int):
     """
     Wait until a specified key is pressed, or until the request times out.
 
-    :param key: Any key, formatted as {"key_name"}.
+    :param key: Any key, formatted as "key_name".
     :param timeout: Should be in seconds. A value <= 0 will lead to the program locking up until the desired key is pressed.
     :return: True if the key is pressed, False if the request times out.
     """
@@ -109,11 +109,11 @@ def keychecks_timeout(key: str, timeout: int):
         return False
 
 
-def keychecks_1or2(key1: str, key2: str):
+def keychecks_eitheror(key1: str, key2: str):
     """
     Constantly checks until one of two keys are pressed.
 
-    :param key1: Any key, formatted as {"key_name"}.
+    :param key1: Any key, formatted as "key_name".
     :param key2: Any key except key1, formatted the same way.
     :return: The value of key1 or key2, whichever is pressed first
     """
@@ -321,15 +321,12 @@ def keyboard_control():
             yv = speed
         if kb.is_pressed("l"):
             land("none")
-            # me.land()
         if kb.is_pressed("t"):
             takeoff(100)
-            # me.takeoff()
         if kb.is_pressed("backspace"):
             tello.emergency()
         if kb.is_pressed("space"):
             land("end")
-            # me.end()
         if kb.is_pressed("down"):
             tello.cam("down")
         elif kb.is_pressed("up"):
@@ -353,15 +350,19 @@ def keyboard_control():
 
 # Here it all comes together
 print("Welcome to the Tello Interface Program (TIP)")
-keychecks_timeout("m", 0)
-print("o7")
-takeoff(80)
-relativeHeight(130)
-move(358)
-relativeHeight(80)
-tello.flip_back()
-time.sleep(1)
-relativeHeight(130)
-move_back(358)
-land("none")
-keyboard_control()
+print("Press the M key to run phase 1 auton + manual")
+print("Press Enter to initiate manual control")
+if keychecks_eitheror("m", "enter") == "m":
+    print("o7")
+    takeoff(80)
+    relativeHeight(130)
+    move(358)
+    relativeHeight(80)
+    tello.flip_back()
+    time.sleep(1)
+    relativeHeight(130)
+    move_back(358)
+    land("none")
+    keyboard_control()
+else:
+    keyboard_control()
