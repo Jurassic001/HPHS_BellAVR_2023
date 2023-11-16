@@ -4,13 +4,13 @@ import keyboard as kb
 import time
 import cv2
 
-me = CustomTello()
-me.connect()
-print("Battery level: " + str(me.get_battery()) + "%")
+tello = CustomTello()
+tello.connect()
+print("Battery level: " + str(tello.get_battery()) + "%")
 time.sleep(1)
-me.streamoff()
-me.streamon()
-frame_read = me.get_frame_read()
+tello.streamoff()
+tello.streamon()
+frame_read = tello.get_frame_read()
 
 
 def keyboard_control():
@@ -36,38 +36,38 @@ def keyboard_control():
             yv = speed
         if kb.is_pressed("l"):
             # land("none")
-            me.land()
+            tello.land()
         if kb.is_pressed("t"):
             # takeoff(100)
-            me.takeoff()
+            tello.takeoff()
         if kb.is_pressed("backspace"):
-            me.emergency()
+            tello.emergency()
         if kb.is_pressed("space"):
             # land("end")
-            me.end()
+            tello.end()
             exit()
         if kb.is_pressed("down"):
-            me.cam("down")
+            tello.cam("down")
         elif kb.is_pressed("up"):
-            me.cam("fwd")
+            tello.cam("fwd")
         if kb.is_pressed("k+w"):
-            me.flip_forward()
+            tello.flip_forward()
         elif kb.is_pressed("k+a"):
-            me.flip_left()
+            tello.flip_left()
         elif kb.is_pressed("k+d"):
-            me.flip_right()
+            tello.flip_right()
         if kb.is_pressed("m"):
-            me.flip_back()
-        me.send_rc_control(lr, fb, ud, yv)
+            tello.flip_back()
+        tello.send_rc_control(lr, fb, ud, yv)
 
 
 # noinspection PyUnresolvedReferences
 def manual():
     while True:
-        img = me.get_frame_read().frame
+        img = tello.get_frame_read().frame
         img = cv2.resize(img, (600, 400))
         cv2.waitKey(1)
-        cv2.imshow("Live Feed", img)
+        cv2.imshow("Tello Interface Program (TIP)", img)
 
 
 livestream = Thread(target=manual)
