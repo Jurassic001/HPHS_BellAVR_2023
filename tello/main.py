@@ -39,7 +39,7 @@ def videofeed():
         cv2.resize(img, (1200, 800))
         if tello.camera_position == "down":
             cv2.rotate(img, cv2.ROTATE_90_COUNTERCLOCKWISE)
-        cv2.moveWindow(img, 360, 140)
+        cv2.moveWindow(img, 360, 0)
         cv2.waitKey(1)
         cv2.imshow("Tello Interface Program (TIP)", img)
         if kb.is_pressed("backspace"):
@@ -88,7 +88,7 @@ def waitUntil(targtime):
         print("ERROR: Attempted to wait for " + str(targtime - time.time()) + " seconds")
 
 
-def waitUntilKeypressed(key: str, timeout: int):
+def keychecks_timeout(key: str, timeout: int):
     """
     Wait until a specified key is pressed, or until the request times out.
 
@@ -97,16 +97,31 @@ def waitUntilKeypressed(key: str, timeout: int):
     :return: True if the key is pressed, False if the request times out.
     """
     if timeout <= 0:
-        print("Waiting for the \"" + key + "\" key to be pressed.")
+        print("Press the \"" + key + "\" key to continue.")
         kb.wait(key)
         return True
     else:
-        print("Waiting for the {" + key + "} to be pressed. Will wait for " + str(timeout) + " seconds.")
+        print("Waiting for the \"" + key + "\" key to be pressed. Will wait for " + str(timeout) + " seconds.")
         targtime = time.time() + timeout
         while targtime < time.time():
             if kb.is_pressed(key):
                 return True
         return False
+
+
+def keychecks_1or2(key1: str, key2: str):
+    """
+    Constantly checks until one of two keys are pressed.
+
+    :param key1: Any key, formatted as {"key_name"}.
+    :param key2: Any key except key1, formatted the same way.
+    :return: The value of key1 or key2, whichever is pressed first
+    """
+    while True:
+        if kb.is_pressed(key1):
+            return key1
+        elif kb.is_pressed(key2):
+            return key2
 
 
 def takeoff(spd: int):
@@ -129,17 +144,18 @@ def land(state: str):
     :param state: "none" for temp landing, "end" for landing + shutoff
     :return: Void
     """
+    print("Landing with state: " + state)
     if state == "end":
-        print("And Alexander wept, for there were no more worlds to conquer.")
         global feed
         feed = False
+        print("And Alexander wept, for there were no more worlds to conquer.")
         livestream.join()
         tello.pipeDown()
         exit()
     elif state == "none":
         tello.land()
     else:
-        print("Landing state not specified, maintaining flight")
+        print("Landing state not recognized, maintaining flight")
 
 
 def turn(deg):
@@ -329,15 +345,15 @@ def keyboard_control():
         if kb.is_pressed("0"):
             print("Are you sure you want to end manual control?")
             print("Press 0 again to confirm. You have 5 seconds.")
-            if waitUntilKeypressed("0", 5):
+            if keychecks_timeout("0", 5):
                 print("Manual Control Offline")
                 break
         tello.send_rc_control(lr, fb, ud, yv)
 
 
 # Here it all comes together
-print("Press M to start")
-waitUntilKeypressed("m", 0)
+print("Welcome to the Tello Interface Program (TIP)")
+keychecks_timeout("m", 0)
 print("o7")
 takeoff(80)
 relativeHeight(130)
