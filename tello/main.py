@@ -124,7 +124,7 @@ def relativeHeight(altitude):
     time.sleep(1)
 
 
-def move(distance):
+def move(distance: int):
     if current_pos[2] == 0:
         current_pos[0] -= distance
     elif current_pos[2] == 90:
@@ -137,7 +137,23 @@ def move(distance):
         me.move_forward(480)
         distance -= 480
     me.move_forward(distance)
-    time.sleep(0.25)
+    time.sleep(0.1)
+
+
+def move_back(distance: int):
+    if current_pos[2] == 0:
+        current_pos[0] += distance
+    elif current_pos[2] == 90:
+        current_pos[1] += distance
+    elif current_pos[2] == 180:
+        current_pos[0] -= distance
+    elif current_pos[2] == 270:
+        current_pos[1] -= distance
+    while distance > 500:
+        me.move_back(480)
+        distance -= 480
+    me.move_back(distance)
+    time.sleep(0.1)
 
 
 def goHomeET(location: str):
