@@ -33,15 +33,15 @@ def videofeed():
     while feed:
         img = tello.get_frame_read().frame
         img = cv2.resize(img, (750, 500))
+        if tello.camera_angle == -90:
+            img = cv2.rotate(img, cv2.ROTATE_90_CLOCKWISE)
+            tello.camera_angle += 90
+        elif tello.camera_angle == 90:
+            img = cv2.rotate(img, cv2.ROTATE_90_COUNTERCLOCKWISE)
+            tello.camera_angle -= 90
         cv2.waitKey(1)
         cv2.imshow("Tello Interface Program (TIP)", img)
         cv2.moveWindow("Tello Interface Program (TIP)", 500, 0)
-        if tello.camera_angle == -90:
-            cv2.rotate("Tello Interface Program (TIP)", cv2.ROTATE_90_CLOCKWISE)
-            tello.camera_angle += 90
-        elif tello.camera_angle == 90:
-            cv2.rotate("Tello Interface Program (TIP)", cv2.ROTATE_90_COUNTERCLOCKWISE)
-            tello.camera_angle -= 90
         if kb.is_pressed("backspace"):
             tello.emergency()
             exit()
@@ -311,8 +311,7 @@ def display_controls():
         "  F: Move Down",
         "  Q: Rotate Counter-Clockwise",
         "  E: Rotate Clockwise",
-        "  O: Land",
-        "  P: Takeoff",
+        "  P: Land/Takeoff",
         "  Space: Land and Shutdown",
         "  K + W: Set Camera Forward",
         "  K + S: Set Camera Downward",
@@ -357,10 +356,11 @@ def keyboard_control():
             yv = -speed
         elif kb.is_pressed("e"):
             yv = speed
-        if kb.is_pressed("o"):
-            land("none")
         if kb.is_pressed("p"):
-            takeoff(100)
+            if tello.is_flying:
+                land("none")
+            else:
+                takeoff(100)
         if kb.is_pressed("backspace"):
             tello.emergency()
         if kb.is_pressed("space"):

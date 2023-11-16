@@ -9,7 +9,7 @@ class CustomTello(Tello):
 
     RESPONSE_TIMEOUT = 15
     camera_position = "fwd"
-    camera_angle = 90
+    camera_angle = 0
 
     def send_control_command(self, command: str, timeout: int = RESPONSE_TIMEOUT) -> bool:
         """
