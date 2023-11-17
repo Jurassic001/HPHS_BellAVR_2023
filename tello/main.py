@@ -422,7 +422,7 @@ if keychecks_eitheror("m", "enter") == "m":
     takeoff(80)
     relativeHeight(130)
     move(340)
-    relativeHeight(90)
+    relativeHeight(80)
     flip("b")
     time.sleep(1)
     keyboard_control()
