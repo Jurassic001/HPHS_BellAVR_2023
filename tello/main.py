@@ -301,7 +301,7 @@ def display_controls():
 
     :return: Void
     """
-    img = pymath.zeros((400, 350, 3), dtype=pymath.uint8)
+    img = pymath.zeros((430, 350, 3), dtype=pymath.uint8)
     controls_text = [
         "Controls:",
         "  W: Move Forward",
@@ -313,6 +313,7 @@ def display_controls():
         "  Q: Rotate Counter-Clockwise",
         "  E: Rotate Clockwise",
         "  P: Land/Takeoff",
+        "  U: Set current state to Land/Takeoff"
         "  Space: Land and Shutdown",
         "  K + W: Set Camera Forward",
         "  K + S: Set Camera Downward",
@@ -324,7 +325,11 @@ def display_controls():
     ]
     for i, text in enumerate(controls_text):
         cv2.putText(img, text, (10, 20 * (i + 1)), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1, cv2.LINE_AA)
-    cv2.putText(img, "Battery level: " + str(tello.get_battery()) + "%", (10, 390), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1, cv2.LINE_AA)
+    cv2.putText(img, "Battery level: " + str(tello.get_battery()) + "%", (10, 400), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1, cv2.LINE_AA)
+    if tello.is_flying:
+        cv2.putText(img, "Current state: Flying", (10, 420), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1, cv2.LINE_AA)
+    else:
+        cv2.putText(img, "Current state: Landed", (10, 420), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1, cv2.LINE_AA)
     cv2.imshow("Controls", img)
     cv2.moveWindow("Controls", 0, 0)
     cv2.waitKey(1)
@@ -363,6 +368,11 @@ def keyboard_control():
                 land("none")
             else:
                 takeoff(100)
+        if kb.is_pressed("u"):
+            if tello.is_flying:
+                tello.is_flying = False
+            else:
+                tello.is_flying = True
         if kb.is_pressed("backspace"):
             tello.emergency()
         if kb.is_pressed("space"):
