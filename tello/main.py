@@ -251,6 +251,19 @@ def move_back(distance: int):
     time.sleep(0.1)
 
 
+def flip(direction: str):
+    """
+    Do a flip
+
+    :param direction: l (left), r (right), f (forward), b (back)
+    :return: Void
+    """
+    if tello.get_battery() > 50:
+        tello.flip(direction)
+    else:
+        print("Error, battery too low to flip")
+
+
 def goHomeET(location: str):
     """
     Can take the tello home from anywhere on the field. Can designate multiple targets to return to, and assign appropriate offset values.
@@ -410,7 +423,7 @@ if keychecks_eitheror("m", "enter") == "m":
     relativeHeight(130)
     move(340)
     relativeHeight(90)
-    tello.flip_back()
+    flip("b")
     time.sleep(1)
     keyboard_control()
 else:
