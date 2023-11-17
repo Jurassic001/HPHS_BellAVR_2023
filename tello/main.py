@@ -324,7 +324,7 @@ def display_controls():
     ]
     for i, text in enumerate(controls_text):
         cv2.putText(img, text, (10, 20 * (i + 1)), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1, cv2.LINE_AA)
-    cv2.putText(img, "Battery level: " + str(tello.get_battery()) + "%", (10, 380), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2, cv2.LINE_AA)
+    cv2.putText(img, "Battery level: " + str(tello.get_battery()) + "%", (10, 390), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1, cv2.LINE_AA)
     cv2.imshow("Controls", img)
     cv2.moveWindow("Controls", 0, 0)
     cv2.waitKey(1)
@@ -398,12 +398,10 @@ if keychecks_eitheror("m", "enter") == "m":
     print("o7")
     takeoff(80)
     relativeHeight(130)
-    move(358)
-    relativeHeight(80)
-    tello.cam("down")
+    move(350)
+    relativeHeight(90)
     tello.flip_back()
     time.sleep(1)
-    tello.cam("fwd")
     keyboard_control()
 else:
     keyboard_control()
