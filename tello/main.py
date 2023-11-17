@@ -343,8 +343,8 @@ def keyboard_control():
     :return: Void
     """
     print("Manual Control: Online")
-    display_controls()
     while True:
+        display_controls()
         lr, fb, ud, yv = 0, 0, 0, 0
         speed = 500
         if kb.is_pressed("a"):
