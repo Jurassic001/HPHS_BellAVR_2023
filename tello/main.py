@@ -395,13 +395,13 @@ def keyboard_control():
         elif kb.is_pressed("k+w"):
             tello.cam("fwd")
         if kb.is_pressed("up"):
-            tello.flip_forward()
+            flip("f")
         elif kb.is_pressed("left"):
-            tello.flip_left()
+            flip("l")
         elif kb.is_pressed("right"):
-            tello.flip_right()
+            flip("r")
         elif kb.is_pressed("down"):
-            tello.flip_back()
+            flip("b")
         if kb.is_pressed("0"):
             print("Are you sure you want to end manual control? Press 0 again to confirm.")
             if keychecks_timeout("0", 5):
