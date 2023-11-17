@@ -408,7 +408,7 @@ if keychecks_eitheror("m", "enter") == "m":
     print("o7")
     takeoff(80)
     relativeHeight(130)
-    move(350)
+    move(340)
     relativeHeight(90)
     tello.flip_back()
     time.sleep(1)
