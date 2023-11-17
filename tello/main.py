@@ -37,6 +37,7 @@ def videofeed():
             img = cv2.rotate(img, cv2.ROTATE_90_COUNTERCLOCKWISE)
             img = cv2.resize(img, (500, 500))
         cv2.putText(img, "Battery level: " + str(tello.get_battery()) + "%", (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 0), 2, cv2.LINE_AA)
+        cv2.rectangle(img, (5, 25), (100, 100), (10, 10, 10), cv2.FILLED)
         cv2.waitKey(1)
         cv2.imshow("Tello Interface Program (TIP)", img)
         if tello.camera_position == "fwd":
@@ -102,6 +103,7 @@ def keychecks_timeout(key: str, timeout: int):
         kb.wait(key)
         return True
     else:
+        time.sleep(0.5)
         print("Waiting for the \"" + key + "\" key to be pressed. Will wait for " + str(timeout) + " seconds.")
         targtime = time.time() + timeout
         while targtime > time.time():
