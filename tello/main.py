@@ -31,6 +31,7 @@ def videofeed():
     """
     global feed
     while feed:
+        frametime = time.time()
         img = tello.get_frame_read().frame
         img = cv2.resize(img, (750, 500))
         if tello.camera_position == "down":
@@ -45,6 +46,7 @@ def videofeed():
         if kb.is_pressed("backspace"):
             tello.emergency()
             exit()
+        cv2.putText(img, str(1/(time.time()-frametime)), (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2, cv2.LINE_AA)
 
 
 livestream = Thread(target=videofeed)
@@ -459,5 +461,9 @@ else:
 To do:
 
 Calibrate IMU
+Rewrite the moveback function
+Test FPS Counter
 Add a goto function (exclude strafing)
+Hot glue the props to the motors
+Reduce the weight of the water bottle
 """
