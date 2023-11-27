@@ -125,14 +125,12 @@ def keychecks_eitheror(key1: str, key2: str):
             return key2
 
 
-def takeoff(spd: int):
+def takeoff():
     """
     My own takeoff command, that sets speed and calibrates height upon takeoff.
 
-    :param spd: Must be less than or equal to 100 and greater than 0
     :return: Void
     """
-    tello.set_speed(spd)
     tello.takeoff()
     current_pos[3] = tello.get_height()
     print("Height Calibrated: " + str(current_pos[3]))
@@ -249,6 +247,21 @@ def move_back(distance: int):
         distance -= 480
     tello.move_back(distance)
     time.sleep(0.1)
+
+
+def fwd_curve(fwd_distance: int, height_increase: int):
+    """
+    Navigates to a specificed position by curving up and around a halfway point.
+
+    :param fwd_distance: The forward distance that the drone will travel.
+    :param height_increase: The height increase, needs to be greater than zero.
+    :return: Void
+    """
+
+    center_pt_x = int(fwd_distance / 2)
+    center_pt_z = current_pos[3]
+    # Do I need this?  >>>  height_increase += current_pos[3]
+    tello.curve_xyz_speed(fwd_distance, 0, height_increase, center_pt_x, 0, center_pt_z, 60)
 
 
 def flip(direction: str):
@@ -380,7 +393,7 @@ def keyboard_control():
             if tello.is_flying:
                 land("none")
             else:
-                takeoff(100)
+                takeoff()
         if kb.is_pressed("u"):
             if tello.is_flying:
                 tello.is_flying = False
@@ -419,10 +432,12 @@ print("Press the M key to run phase 1 auton + manual")
 print("Press Enter to initiate manual control")
 if keychecks_eitheror("m", "enter") == "m":
     print("o7")
-    takeoff(80)
-    relativeHeight(130)
+    tello.set_speed(80)
+    takeoff()
+    fwd_curve(358, current_pos[3]+80)
+    """relativeHeight(130)
     move(340)
-    relativeHeight(80)
+    relativeHeight(80)"""
     flip("b")
     time.sleep(1)
     keyboard_control()
