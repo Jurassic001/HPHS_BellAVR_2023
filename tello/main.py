@@ -454,3 +454,10 @@ if keychecks_eitheror("m", "enter") == "m":
     keyboard_control()
 else:
     keyboard_control()
+
+"""
+To do:
+
+Calibrate IMU
+Add a goto function (exclude strafing)
+"""
