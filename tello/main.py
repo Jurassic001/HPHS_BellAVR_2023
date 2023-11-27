@@ -263,6 +263,17 @@ def fwd_curve(fwd_distance: int, height_increase: int):
     # Do I need this?  >>>  height_increase += current_pos[3]
     tello.curve_xyz_speed(fwd_distance, 0, height_increase, center_pt_x, 0, center_pt_z, 60)
 
+    # Update position values:
+    if current_pos[2] == 0:
+        current_pos[0] += fwd_distance
+    elif current_pos[2] == 90:
+        current_pos[1] += fwd_distance
+    elif current_pos[2] == 180:
+        current_pos[0] -= fwd_distance
+    elif current_pos[2] == 270:
+        current_pos[1] -= fwd_distance
+    current_pos[3] += height_increase
+
 
 def flip(direction: str):
     """
