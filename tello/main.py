@@ -19,7 +19,7 @@ frame_read = tello.get_frame_read()
 current_pos = [0, 0, 180, 0]
 feed = True
 
-# tello.set_wifi_credentials("Venom", "Put your own password here")
+# tello.set_wifi_credentials("Venom", "telloVen")
 
 
 # noinspection PyUnresolvedReferences
@@ -487,7 +487,6 @@ else:
 """
 To do:
 
-Rename to tello-venom with password 4ven
 Calibrate IMU
 Test auton
 Reduce the weight of the water bottle

@@ -70,7 +70,11 @@ class CustomTello(Tello):
             self.streamoff()
 
     def set_wifi_credentials(self, myssid, mypassword):
-        """Set the Wi-Fi SSID and password. The Tello will reboot afterwords.
+        """
+        Set the Wi-Fi SSID and password. The Tello will reboot afterwords.
+        Only run this command after all configuration is finished and you've reached the point that you would start running movement commands.
+        This should be the last command you run.
+        In short, Connect, Setup & Start Video Feed >> This command >> Nothing
         """
         cmd = 'wifi {} {}'.format(myssid, mypassword)
         self.send_command_without_return(cmd)
