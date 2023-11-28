@@ -159,7 +159,7 @@ def land(state: str):
 
 def turn(deg):
     """
-    Command that turns the specificed forward_distance in degrees, positive for clockwise, negative for counter-clockwise
+    Command that turns the specificed final_x in degrees, positive for clockwise, negative for counter-clockwise
 
     :param deg: Positive for clockwise, negative for counter-clockwise. Should be a multiple of 90 if you intend to use special navigation functions.
     :return: Void
@@ -261,43 +261,46 @@ def move_back(distance: int):
     time.sleep(0.1)
 
 
-def goto_curve(forward_distance: int, height_change: int):
+def goto_curve(final_x: int, final_z: int, curve_x: int, curve_z: int):
     """
     Navigates to a specificed position by curving up and over a point.
     Will always attempt to rotate over a point instead of under it.
     No side-to-side movement.
 
-    :param forward_distance: The distance that the drone will travel. Basically the distance that would be travelled if you were to move in a straight line.
-    :param height_change: The height change relative to the current position, so 10 would move you up 10 cm and -10 would move you down 10 cm.
+    :param final_x: The horizontal distance to the final point.
+    :param final_z: The vertical distance to the final point, relative to ground level (0).
+    :param curve_x: The horizontal distance to the first point along the curve that the tello will encounter.
+    :param curve_z: The vertical distance to the first point, relative to ground level (0), along the curve.
     :return: Void
     """
-    # Designate the point to rotate around and execute the movement
-    center_pt_x = int(forward_distance / 2)
-    center_pt_z = height_change - 1
-    tello.curve_xyz_speed(forward_distance, 0, height_change, center_pt_x, 0, center_pt_z, 60)
+    # Do the curvin'
+    final_z -= current_pos[3]
+    curve_z -= current_pos[3]
+    tello.curve_xyz_speed(curve_x, 0, curve_z, final_x, 0, final_z, 60)
 
     # Update position values
     if current_pos[2] == 0:
-        current_pos[0] -= forward_distance
+        current_pos[0] -= final_x
     elif current_pos[2] == 90:
-        current_pos[1] -= forward_distance
+        current_pos[1] -= final_x
     elif current_pos[2] == 180:
-        current_pos[0] += forward_distance
+        current_pos[0] += final_x
     elif current_pos[2] == 270:
-        current_pos[1] += forward_distance
-    current_pos[3] += height_change
+        current_pos[1] += final_x
+    current_pos[3] += final_z
 
 
-def goto_line(distance: int, height_change: int):
+def goto_line(distance: int, height: int):
     """
     Navigates to a specified position in a straight line. No side-to-side movement.
 
     :param distance: The distance that will be travelled forward/backward in a straight line.
-    :param height_change: The height change relative to the current position, so 20 would move you up 20 cm and -20 would move you down 20 cm.
+    :param height: The target height relative to ground level (0).
     :return: Void
     """
     # Go to the specified position
-    tello.go_xyz_speed(distance, 0, height_change, 100)
+    height -= current_pos[3]
+    tello.go_xyz_speed(distance, 0, height, 100)
 
     # Update positon values
     if current_pos[2] == 0:
@@ -308,7 +311,7 @@ def goto_line(distance: int, height_change: int):
         current_pos[0] += distance
     elif current_pos[2] == 270:
         current_pos[1] += distance
-    current_pos[3] += height_change
+    current_pos[3] += height
 
 
 def flip(direction: str):
@@ -343,7 +346,7 @@ def goHomeET(location: str):
         print("Calculating origin direction")
         homeAngle = -int(pymath.degrees(pymath.arctan((current_pos[0] / current_pos[1]))))
         turn(homeAngle)
-        print("Calculating origin forward_distance")
+        print("Calculating origin final_x")
         move(int(pymath.sqrt(pymath.square(current_pos[0]) + pymath.square(current_pos[1]))))
     elif current_pos[1] == 0:
         if current_pos[0] > 0:
@@ -483,13 +486,13 @@ if keychecks_eitheror("m", "enter") == "m":
     print("o7")
     tello.set_speed(80)
     takeoff()
-    goto_curve(358, 80)
+    goto_curve(358, 80, 250, 95)
     """relativeHeight(130)
     move(340)
     relativeHeight(80)"""
     flip("b")
     time.sleep(1)
-    goto_curve(-358, -80)
+    goto_curve(-358, -80, -50, 95)
     land("none")
     keyboard_control()
 else:
@@ -498,6 +501,7 @@ else:
 """
 To do:
 
+Rename to tello-venom with password 4ven
 Calibrate IMU
 Test FPS Counter
 Test goto_line and goto_curve functions
