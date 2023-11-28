@@ -10,7 +10,6 @@ import cv2
 # Initialize the tello object, connect to the tello, and set up some stuff for the video feed
 tello = CustomTello()
 tello.connect()
-time.sleep(1)
 tello.streamoff()
 tello.streamon()
 frame_read = tello.get_frame_read()
@@ -19,6 +18,8 @@ frame_read = tello.get_frame_read()
 # Set up the position tracking list and video feed boolean
 current_pos = [0, 0, 180, 0]
 feed = True
+
+# tello.set_wifi_credentials("Venom", "Put your own password here")
 
 
 # noinspection PyUnresolvedReferences
@@ -49,18 +50,6 @@ def videofeed():
 
 livestream = Thread(target=videofeed)
 livestream.start()
-
-
-def setWifiCreds():
-    """
-    Sets tello's wifi signal name and password. Signal name will appear as "TELLO-{NAME}".
-    Calling this function will restart the Tello.
-
-    :return: Void
-    """
-    NAME = "4Runner"
-    PASSWORD = "tellorun"
-    tello.set_wifi_credentials(NAME, PASSWORD)
 
 
 def setPosition():
@@ -487,12 +476,9 @@ if keychecks_eitheror("m", "enter") == "m":
     tello.set_speed(80)
     takeoff()
     goto_curve(358, 80, 250, 95)
-    """relativeHeight(130)
-    move(340)
-    relativeHeight(80)"""
     flip("b")
     time.sleep(1)
-    goto_curve(-358, -80, -50, 95)
+    goto_curve(-358, 60, -50, 95)
     land("none")
     keyboard_control()
 else:
@@ -503,7 +489,6 @@ To do:
 
 Rename to tello-venom with password 4ven
 Calibrate IMU
-Test FPS Counter
-Test goto_line and goto_curve functions
+Test auton
 Reduce the weight of the water bottle
 """

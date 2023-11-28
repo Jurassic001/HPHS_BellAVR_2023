@@ -68,3 +68,9 @@ class CustomTello(Tello):
             self.land()
         if self.stream_on:
             self.streamoff()
+
+    def set_wifi_credentials(self, myssid, mypassword):
+        """Set the Wi-Fi SSID and password. The Tello will reboot afterwords.
+        """
+        cmd = 'wifi {} {}'.format(myssid, mypassword)
+        self.send_command_without_return(cmd)
