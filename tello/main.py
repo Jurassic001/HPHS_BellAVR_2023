@@ -20,7 +20,7 @@ current_pos = [0, 0, 180, 0]
 feed = True
 tello.set_speed(100)
 
-# tello.set_wifi_credentials("Venom", "telloVen")
+# tello.set_wifi_credentials("VenomAir", "telloVen")
 
 
 # noinspection PyUnresolvedReferences
@@ -106,13 +106,13 @@ def keychecks_eitheror(key1: str, key2: str):
 
     :param key1: Any key, formatted as "key_name".
     :param key2: Any key, formatted the same way.
-    :return: The value of key1 or key2, whichever is pressed first
+    :return: True if key1 is pressed, False if key2 is pressed
     """
     while True:
         if kb.is_pressed(key1):
-            return key1
+            return True
         elif kb.is_pressed(key2):
-            return key2
+            return False
 
 
 def takeoff():
@@ -473,7 +473,7 @@ print("Welcome to the Tello Interface Program (TIP)")
 print("")
 print("Press the M key to run phase 1 auton + manual")
 print("Press Enter to initiate manual control")
-if keychecks_eitheror("m", "enter") == "m":
+if keychecks_eitheror("m", "enter"):
     takeoff()
     goto_line(205, 121)
     goto_line(153, 80)
@@ -491,7 +491,7 @@ else:
 To do:
 Calibrate IMU (Comp Day)
 
-Update firmware
+Test the Venom tello for accurate horizontal movement
 Test stability of different flip directions
 Counter-flip to compensate for offset - useful?
 Reduce the weight of the water bottle
