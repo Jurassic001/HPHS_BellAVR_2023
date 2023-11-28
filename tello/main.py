@@ -31,7 +31,6 @@ def videofeed():
     """
     global feed
     while feed:
-        frametime = time.time()
         img = tello.get_frame_read().frame
         img = cv2.resize(img, (750, 500))
         if tello.camera_position == "down":
@@ -46,7 +45,6 @@ def videofeed():
         if kb.is_pressed("backspace"):
             tello.emergency()
             exit()
-        cv2.putText(img, str(1/(time.time()-frametime)), (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2, cv2.LINE_AA)
 
 
 livestream = Thread(target=videofeed)
@@ -376,7 +374,7 @@ def display_controls():
 
     :return: Void
     """
-    img = pymath.zeros((430, 350, 3), dtype=pymath.uint8)
+    img = pymath.zeros((470, 350, 3), dtype=pymath.uint8)
     controls_text = [
         "Controls:",
         "  W: Move Forward",
@@ -388,7 +386,7 @@ def display_controls():
         "  Q: Rotate Counter-Clockwise",
         "  E: Rotate Clockwise",
         "  P: Land/Takeoff",
-        "  U: Set current state to Land/Takeoff"
+        "  U: Set current state to Landed/Flying"
         "  Space: Land and Shutdown",
         "  K + W: Set Camera Forward",
         "  K + S: Set Camera Downward",
@@ -396,15 +394,17 @@ def display_controls():
         "  Left Arrow: Flip Left",
         "  Right Arrow: Flip Right",
         "  Down Arrow: Flip Backward",
+        "  Space: Land and Exit",
+        "  Backspace : Emergency Stop",
         "  0: End Manual Control"
     ]
     for i, text in enumerate(controls_text):
         cv2.putText(img, text, (10, 20 * (i + 1)), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1, cv2.LINE_AA)
-    cv2.putText(img, "Battery level: " + str(tello.get_battery()) + "%", (10, 400), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1, cv2.LINE_AA)
+    cv2.putText(img, "Battery level: " + str(tello.get_battery()) + "%", (10, 440), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1, cv2.LINE_AA)
     if tello.is_flying:
-        cv2.putText(img, "Current state: Flying", (10, 420), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1, cv2.LINE_AA)
+        cv2.putText(img, "Current state: Flying", (10, 460), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1, cv2.LINE_AA)
     else:
-        cv2.putText(img, "Current state: Landed", (10, 420), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1, cv2.LINE_AA)
+        cv2.putText(img, "Current state: Landed", (10, 460), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1, cv2.LINE_AA)
     cv2.imshow("Controls", img)
     cv2.moveWindow("Controls", 0, 0)
     cv2.waitKey(1)
@@ -501,6 +501,5 @@ To do:
 Calibrate IMU
 Test FPS Counter
 Test goto_line and goto_curve functions
-Hot glue the props to the motors
 Reduce the weight of the water bottle
 """
