@@ -440,6 +440,7 @@ def keyboard_control():
                 tello.is_flying = False
             else:
                 tello.is_flying = True
+            time.sleep(0.25)
         if kb.is_pressed("backspace"):
             tello.emergency()
         if kb.is_pressed("space"):
