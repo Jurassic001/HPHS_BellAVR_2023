@@ -7,7 +7,7 @@ import time
 import cv2
 
 
-# Initialize the tello object, connect to the tello, print its battery level, and set up some stuff for the video feed
+# Initialize the tello object, connect to the tello, and set up some stuff for the video feed
 tello = CustomTello()
 tello.connect()
 time.sleep(1)
@@ -117,7 +117,7 @@ def keychecks_eitheror(key1: str, key2: str):
     Constantly checks until one of two keys are pressed.
 
     :param key1: Any key, formatted as "key_name".
-    :param key2: Any key except key1, formatted the same way.
+    :param key2: Any key, formatted the same way.
     :return: The value of key1 or key2, whichever is pressed first
     """
     while True:
@@ -161,17 +161,20 @@ def land(state: str):
 
 def turn(deg):
     """
-    Command that turns the specificed distance in degrees, positive for clockwise, negative for counter-clockwise
+    Command that turns the specificed forward_distance in degrees, positive for clockwise, negative for counter-clockwise
 
     :param deg: Positive for clockwise, negative for counter-clockwise. Should be a multiple of 90 if you intend to use special navigation functions.
     :return: Void
     """
+    # Do the turnin'
     while deg >= 360:
         deg -= 360
     if deg > 0:
         tello.rotate_clockwise(deg)
     elif deg < 0:
         tello.rotate_counter_clockwise(-deg)
+
+    # Update position values
     if current_pos[2] + deg < 0:
         current_pos[2] = 360 - (int(pymath.absolute(deg)) - current_pos[2])
     else:
@@ -198,8 +201,11 @@ def relativeHeight(altitude):
     :param altitude: Any value except a negative or a high (500+) number should work. Do not try and descend into the floor.
     :return: Void
     """
+    # Update position values
     altitude -= current_pos[3]
     current_pos[3] += altitude
+
+    # Do the ascending/descending
     if altitude > 0:
         tello.move_up(altitude)
     elif altitude < 0:
@@ -214,6 +220,7 @@ def move(distance: int):
     :param distance: Can handle any non-negative number. Bigger distances will be split into multiple commands because tello's can't comprehend distances of over 500 cm.
     :return: Void
     """
+    # Update position values
     if current_pos[2] == 0:
         current_pos[0] -= distance
     elif current_pos[2] == 90:
@@ -222,6 +229,8 @@ def move(distance: int):
         current_pos[0] += distance
     elif current_pos[2] == 270:
         current_pos[1] += distance
+
+    # Do the movin'
     while distance > 500:
         tello.move_forward(480)
         distance -= 480
@@ -236,6 +245,7 @@ def move_back(distance: int):
     :param distance: Can handle any non-negative number. Bigger distances will be split into multiple commands because tello's can't comprehend distances of over 500 cm.
     :return: Void
     """
+    # Update position values
     if current_pos[2] == 0:
         current_pos[0] += distance
     elif current_pos[2] == 90:
@@ -244,6 +254,8 @@ def move_back(distance: int):
         current_pos[0] -= distance
     elif current_pos[2] == 270:
         current_pos[1] -= distance
+
+    # Do the movin'
     while distance > 500:
         tello.move_back(480)
         distance -= 480
@@ -251,35 +263,59 @@ def move_back(distance: int):
     time.sleep(0.1)
 
 
-def fwd_curve(fwd_distance: int, height_increase: int):
+def goto_curve(forward_distance: int, height_change: int):
     """
-    Navigates to a specificed position by curving up and around a halfway point.
+    Navigates to a specificed position by curving up and over a point.
+    Will always attempt to rotate over a point instead of under it.
+    No side-to-side movement.
 
-    :param fwd_distance: The forward distance that the drone will travel.
-    :param height_increase: The height increase, needs to be greater than zero.
+    :param forward_distance: The distance that the drone will travel. Basically the distance that would be travelled if you were to move in a straight line.
+    :param height_change: The height change relative to the current position, so 10 would move you up 10 cm and -10 would move you down 10 cm.
     :return: Void
     """
+    # Designate the point to rotate around and execute the movement
+    center_pt_x = int(forward_distance / 2)
+    center_pt_z = height_change - 1
+    tello.curve_xyz_speed(forward_distance, 0, height_change, center_pt_x, 0, center_pt_z, 60)
 
-    center_pt_x = int(fwd_distance / 2)
-    center_pt_z = current_pos[3]
-    # Do I need this?  >>>  height_increase += current_pos[3]
-    tello.curve_xyz_speed(fwd_distance, 0, height_increase, center_pt_x, 0, center_pt_z, 60)
-
-    # Update position values:
+    # Update position values
     if current_pos[2] == 0:
-        current_pos[0] += fwd_distance
+        current_pos[0] -= forward_distance
     elif current_pos[2] == 90:
-        current_pos[1] += fwd_distance
+        current_pos[1] -= forward_distance
     elif current_pos[2] == 180:
-        current_pos[0] -= fwd_distance
+        current_pos[0] += forward_distance
     elif current_pos[2] == 270:
-        current_pos[1] -= fwd_distance
-    current_pos[3] += height_increase
+        current_pos[1] += forward_distance
+    current_pos[3] += height_change
+
+
+def goto_line(distance: int, height_change: int):
+    """
+    Navigates to a specified position in a straight line. No side-to-side movement.
+
+    :param distance: The distance that will be travelled forward/backward in a straight line.
+    :param height_change: The height change relative to the current position, so 20 would move you up 20 cm and -20 would move you down 20 cm.
+    :return: Void
+    """
+    # Go to the specified position
+    tello.go_xyz_speed(distance, 0, height_change, 100)
+
+    # Update positon values
+    if current_pos[2] == 0:
+        current_pos[0] -= distance
+    elif current_pos[2] == 90:
+        current_pos[1] -= distance
+    elif current_pos[2] == 180:
+        current_pos[0] += distance
+    elif current_pos[2] == 270:
+        current_pos[1] += distance
+    current_pos[3] += height_change
 
 
 def flip(direction: str):
     """
-    Do a flip
+    Do a flip. Won't flip if the battery is <= 50% charged (This prevents a fatal error).
 
     :param direction: l (left), r (right), f (forward), b (back)
     :return: Void
@@ -309,7 +345,7 @@ def goHomeET(location: str):
         print("Calculating origin direction")
         homeAngle = -int(pymath.degrees(pymath.arctan((current_pos[0] / current_pos[1]))))
         turn(homeAngle)
-        print("Calculating origin distance")
+        print("Calculating origin forward_distance")
         move(int(pymath.sqrt(pymath.square(current_pos[0]) + pymath.square(current_pos[1]))))
     elif current_pos[1] == 0:
         if current_pos[0] > 0:
@@ -447,12 +483,14 @@ if keychecks_eitheror("m", "enter") == "m":
     print("o7")
     tello.set_speed(80)
     takeoff()
-    fwd_curve(358, current_pos[3]+80)
+    goto_curve(358, 80)
     """relativeHeight(130)
     move(340)
     relativeHeight(80)"""
     flip("b")
     time.sleep(1)
+    goto_curve(-358, -80)
+    land("none")
     keyboard_control()
 else:
     keyboard_control()
@@ -461,9 +499,8 @@ else:
 To do:
 
 Calibrate IMU
-Rewrite the moveback function
 Test FPS Counter
-Add a goto function (exclude strafing)
+Test goto_line and goto_curve functions
 Hot glue the props to the motors
 Reduce the weight of the water bottle
 """
