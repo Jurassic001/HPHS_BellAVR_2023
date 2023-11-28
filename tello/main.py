@@ -15,9 +15,10 @@ tello.streamon()
 frame_read = tello.get_frame_read()
 
 
-# Set up the position tracking list and video feed boolean
+# Set up the position tracking list and video feed boolean and set the speed value
 current_pos = [0, 0, 180, 0]
 feed = True
+tello.set_speed(100)
 
 # tello.set_wifi_credentials("Venom", "telloVen")
 
@@ -473,13 +474,14 @@ print("")
 print("Press the M key to run phase 1 auton + manual")
 print("Press Enter to initiate manual control")
 if keychecks_eitheror("m", "enter") == "m":
-    print("o7")
-    tello.set_speed(80)
     takeoff()
-    goto_curve(358, 80, 250, 95)
+    goto_line(205, 121)
+    goto_line(153, 80)
     flip("b")
-    time.sleep(1)
-    goto_curve(-358, 60, -50, 95)
+    # goto_line(-153, 121)
+    # goto_line(-205, 60)
+    relativeHeight(215)
+    goto_line(-358, 60)
     land("none")
     keyboard_control()
 else:
@@ -487,8 +489,10 @@ else:
 
 """
 To do:
+Calibrate IMU (Comp Day)
 
-Calibrate IMU
-Test auton
+Update firmware
+Test stability of different flip directions
+Counter-flip to compensate for offset - useful?
 Reduce the weight of the water bottle
 """
