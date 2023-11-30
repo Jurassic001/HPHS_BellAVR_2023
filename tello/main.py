@@ -39,11 +39,11 @@ def videofeed():
             img = cv2.rotate(img, cv2.ROTATE_90_CLOCKWISE)
             img = cv2.resize(img, (500, 500))
         cv2.waitKey(1)
-        cv2.imshow("Tello Interface Program (TIP)", img)
+        cv2.imshow("Tello Interface Program", img)
         if tello.camera_position == "fwd":
-            cv2.moveWindow("Tello Interface Program (TIP)", 500, 0)
+            cv2.moveWindow("Tello Interface Program", 500, 0)
         else:
-            cv2.moveWindow("Tello Interface Program (TIP)", 750, 0)
+            cv2.moveWindow("Tello Interface Program", 750, 0)
         if kb.is_pressed("backspace"):
             tello.emergency()
             exit()
@@ -367,7 +367,7 @@ def display_controls():
 
     :return: Void
     """
-    img = np.zeros((470, 350, 3), dtype=np.uint8)
+    img = np.zeros((470, 450, 3), dtype=np.uint8)
     controls_text = [
         "Controls:",
         "  W: Move Forward",
@@ -379,8 +379,7 @@ def display_controls():
         "  Q: Rotate Counter-Clockwise",
         "  E: Rotate Clockwise",
         "  P: Land/Takeoff",
-        "  U: Set current state to Landed/Flying"
-        "  Space: Land and Shutdown",
+        "  U: Set current state to Landed/Flying",
         "  K + W: Set Camera Forward",
         "  K + S: Set Camera Downward",
         "  Up Arrow: Flip Forward",
@@ -469,19 +468,18 @@ def keyboard_control():
 
 
 # Here it all comes together
-print("Welcome to the Tello Interface Program (TIP)")
+print("Welcome to the Tello Interface Program")
+print("Current battery level: "+str(tello.get_battery())+"%")
 print("")
 print("Press the M key to run phase 1 auton + manual")
 print("Press Enter to initiate manual control")
 if keychecks_eitheror("m", "enter"):
     takeoff()
-    goto_line(205, 121)
-    goto_line(153, 80)
+    goto_line(205, 125)
+    goto_line(155, 80)
     flip("b")
-    # goto_line(-153, 121)
-    # goto_line(-205, 60)
-    relativeHeight(215)
-    goto_line(-358, 60)
+    goto_line(-155, 125)
+    goto_line(-205, 80)
     land("none")
     keyboard_control()
 else:
@@ -489,10 +487,7 @@ else:
 
 """
 To do:
-Calibrate IMU (Comp Day)
 
-Test the Venom tello for accurate horizontal movement
-Test stability of different flip directions
-Counter-flip to compensate for offset - useful?
-Reduce the weight of the water bottle
+Score points
+Overcompensate
 """

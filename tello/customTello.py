@@ -1,14 +1,15 @@
 # Code by Max Haberer
 from djitellopy import Tello
-import time
 
 
 class CustomTello(Tello):
     def __init__(self):
         super().__init__()
 
+    # Two rewritten tello vars
     RESPONSE_TIMEOUT = 15
     TIME_BTW_RC_CONTROL_COMMANDS = -1
+    # Var to store the camera position
     camera_position = "fwd"
 
     def send_control_command(self, command: str, timeout: int = RESPONSE_TIMEOUT) -> bool:
@@ -30,15 +31,6 @@ class CustomTello(Tello):
             exit()
         self.raise_result_error(command, response)
         return False  # never reached
-
-    def takeoff(self):
-        """
-        Automatic takeoff.
-        Overridden so that the drone sleeps for one second after takeoff
-        """
-        self.send_control_command("takeoff", timeout=Tello.TAKEOFF_TIMEOUT)
-        self.is_flying = True
-        time.sleep(1)
 
     def stop(self):
         """
