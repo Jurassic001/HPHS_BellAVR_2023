@@ -8,6 +8,7 @@ class CustomTello(Tello):
         super().__init__()
 
     RESPONSE_TIMEOUT = 15
+    TIME_BTW_RC_CONTROL_COMMANDS = -1
     camera_position = "fwd"
 
     def send_control_command(self, command: str, timeout: int = RESPONSE_TIMEOUT) -> bool:

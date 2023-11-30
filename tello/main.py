@@ -2,7 +2,7 @@
 from customTello import CustomTello
 from threading import Thread
 import keyboard as kb
-import numpy as pymath
+import numpy as np
 import time
 import cv2
 
@@ -164,7 +164,7 @@ def turn(deg):
 
     # Update position values
     if current_pos[2] + deg < 0:
-        current_pos[2] = 360 - (int(pymath.absolute(deg)) - current_pos[2])
+        current_pos[2] = 360 - (int(np.absolute(deg)) - current_pos[2])
     else:
         current_pos[2] += deg
     if current_pos[2] >= 360:
@@ -334,10 +334,10 @@ def goHomeET(location: str):
         elif current_pos[1] < 0:
             faceDeg(270)
         print("Calculating origin direction")
-        homeAngle = -int(pymath.degrees(pymath.arctan((current_pos[0] / current_pos[1]))))
+        homeAngle = -int(np.degrees(np.arctan((current_pos[0] / current_pos[1]))))
         turn(homeAngle)
         print("Calculating origin final_x")
-        move(int(pymath.sqrt(pymath.square(current_pos[0]) + pymath.square(current_pos[1]))))
+        move(int(np.sqrt(np.square(current_pos[0]) + np.square(current_pos[1]))))
     elif current_pos[1] == 0:
         if current_pos[0] > 0:
             faceDeg(0)
@@ -367,7 +367,7 @@ def display_controls():
 
     :return: Void
     """
-    img = pymath.zeros((470, 350, 3), dtype=pymath.uint8)
+    img = np.zeros((470, 350, 3), dtype=np.uint8)
     controls_text = [
         "Controls:",
         "  W: Move Forward",
