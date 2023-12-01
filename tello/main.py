@@ -24,7 +24,7 @@ tello.set_speed(100)
 
 
 # noinspection PyUnresolvedReferences
-# cv2 causes a bunch of "cannot find refrence in __init__.py" errors, but they don't actually cause issues (afaik), so we just ignore them
+# cv2 causes a bunch of "cannot find refrence in __init__.py" errors, but they don't actually cause issues so we just ignore them
 def videofeed():
     """
     Constantly get frames from the tello's camera and displays them, will shut off all motors if backspace is pressed.
@@ -44,9 +44,6 @@ def videofeed():
             cv2.moveWindow("Tello Interface Program", 500, 0)
         else:
             cv2.moveWindow("Tello Interface Program", 750, 0)
-        if kb.is_pressed("backspace"):
-            tello.emergency()
-            exit()
 
 
 livestream = Thread(target=videofeed)
@@ -363,11 +360,11 @@ def goHomeET(location: str):
 # Same cv2 issue as videofeed(), same fix
 def display_controls():
     """
-    Displays the keybinds for manual control.
+    Displays the keybinds for manual control, alongside some other info like battery %, if the drone is flying/landed, and camera feed UPS
 
     :return: Void
     """
-    img = np.zeros((470, 450, 3), dtype=np.uint8)
+    img = np.zeros((500, 500, 3), dtype=np.uint8)
     controls_text = [
         "Controls:",
         "  W: Move Forward",
@@ -392,11 +389,11 @@ def display_controls():
     ]
     for i, text in enumerate(controls_text):
         cv2.putText(img, text, (10, 20 * (i + 1)), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1, cv2.LINE_AA)
-    cv2.putText(img, "Battery level: " + str(tello.get_battery()) + "%", (10, 440), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1, cv2.LINE_AA)
+    cv2.putText(img, "Battery level: " + str(tello.get_battery()) + "%", (10, 450), cv2.FONT_HERSHEY_SIMPLEX, 0.75, (255, 255, 255), 1, cv2.LINE_AA)
     if tello.is_flying:
-        cv2.putText(img, "Current state: Flying", (10, 460), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1, cv2.LINE_AA)
+        cv2.putText(img, "Current state: Flying", (10, 480), cv2.FONT_HERSHEY_SIMPLEX, 0.75, (255, 255, 255), 1, cv2.LINE_AA)
     else:
-        cv2.putText(img, "Current state: Landed", (10, 460), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1, cv2.LINE_AA)
+        cv2.putText(img, "Current state: Landed", (10, 480), cv2.FONT_HERSHEY_SIMPLEX, 0.75, (255, 255, 255), 1, cv2.LINE_AA)
     cv2.imshow("Controls", img)
     cv2.moveWindow("Controls", 0, 0)
     cv2.waitKey(1)
