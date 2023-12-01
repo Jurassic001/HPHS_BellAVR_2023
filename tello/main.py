@@ -27,7 +27,7 @@ tello.set_speed(100)
 # cv2 causes a bunch of "cannot find refrence in __init__.py" errors, but they don't actually cause issues so we just ignore them
 def videofeed():
     """
-    Constantly get frames from the tello's camera and displays them, will shut off all motors if backspace is pressed.
+    Constantly get frames from the tello's camera and displays them, formatting based on camera position
 
     :return: Void
     """
