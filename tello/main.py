@@ -35,15 +35,11 @@ def videofeed():
     while feed:
         img = tello.get_frame_read().frame
         img = cv2.resize(img, (750, 500))
-        if tello.camera_position == "down":
-            img = cv2.rotate(img, cv2.ROTATE_90_CLOCKWISE)
-            img = cv2.resize(img, (500, 500))
+        if not tello.camera_position: img = cv2.rotate(img, cv2.ROTATE_90_CLOCKWISE); img = cv2.resize(img, (500, 500))
         cv2.waitKey(1)
         cv2.imshow("Tello Interface Program", img)
-        if tello.camera_position == "fwd":
-            cv2.moveWindow("Tello Interface Program", 500, 0)
-        else:
-            cv2.moveWindow("Tello Interface Program", 750, 0)
+        if tello.camera_position: cv2.moveWindow("Tello Interface Program", 500, 0)
+        else: cv2.moveWindow("Tello Interface Program", 750, 0)
 
 
 livestream = Thread(target=videofeed)
@@ -120,7 +116,6 @@ def takeoff():
     """
     tello.takeoff()
     current_pos[3] = tello.get_height()
-    print("Height Calibrated: " + str(current_pos[3]))
 
 
 def land(state: str):
@@ -349,8 +344,7 @@ def goHomeET(location: str):
         elif current_pos[1] < 0:
             faceDeg(270)
             move(-current_pos[1])
-    else:
-        print("Position Data Failure - Cannot Return Home")
+    else: print("Position Data Failure - Cannot Return Home")
     time.sleep(2)
     faceDeg(180)
     setPosition()
@@ -360,7 +354,7 @@ def goHomeET(location: str):
 # Same cv2 issue as videofeed(), same fix
 def display_controls():
     """
-    Displays the keybinds for manual control, alongside some other info like battery %, if the drone is flying/landed, and camera feed UPS
+    Displays the keybinds for manual control, alongside some other info like battery % and if the drone is flying/landed
 
     :return: Void
     """
@@ -376,7 +370,7 @@ def display_controls():
         "  Q: Rotate Counter-Clockwise",
         "  E: Rotate Clockwise",
         "  P: Land/Takeoff",
-        "  U: Set current state to Landed/Flying",
+        "  U: Toggle Flight State",
         "  K + W: Set Camera Forward",
         "  K + S: Set Camera Downward",
         "  Up Arrow: Flip Forward",
@@ -384,16 +378,14 @@ def display_controls():
         "  Right Arrow: Flip Right",
         "  Down Arrow: Flip Backward",
         "  Space: Land and Exit",
-        "  Backspace : Emergency Stop",
-        "  0: End Manual Control"
+        "  Backspace: Emergency Stop",
+        "  0: Exit Manual Control"
     ]
     for i, text in enumerate(controls_text):
         cv2.putText(img, text, (10, 20 * (i + 1)), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1, cv2.LINE_AA)
-    cv2.putText(img, "Battery level: " + str(tello.get_battery()) + "%", (10, 450), cv2.FONT_HERSHEY_SIMPLEX, 0.75, (255, 255, 255), 1, cv2.LINE_AA)
-    if tello.is_flying:
-        cv2.putText(img, "Current state: Flying", (10, 480), cv2.FONT_HERSHEY_SIMPLEX, 0.75, (255, 255, 255), 1, cv2.LINE_AA)
-    else:
-        cv2.putText(img, "Current state: Landed", (10, 480), cv2.FONT_HERSHEY_SIMPLEX, 0.75, (255, 255, 255), 1, cv2.LINE_AA)
+    cv2.putText(img, "Battery Level: " + str(tello.get_battery()) + "%", (10, 450), cv2.FONT_HERSHEY_SIMPLEX, 0.75, (255, 255, 255), 1, cv2.LINE_AA)
+    if tello.is_flying: cv2.putText(img, "Current State: Flying", (10, 480), cv2.FONT_HERSHEY_SIMPLEX, 0.75, (255, 255, 255), 1, cv2.LINE_AA)
+    else: cv2.putText(img, "Current State: Landed", (10, 480), cv2.FONT_HERSHEY_SIMPLEX, 0.75, (255, 255, 255), 1, cv2.LINE_AA)
     cv2.imshow("Controls", img)
     cv2.moveWindow("Controls", 0, 0)
     cv2.waitKey(1)
@@ -428,15 +420,10 @@ def keyboard_control():
         elif kb.is_pressed("e"):
             yv = speed
         if kb.is_pressed("p"):
-            if tello.is_flying:
-                land("none")
-            else:
-                takeoff()
+            if tello.is_flying: land("none")
+            else: takeoff()
         if kb.is_pressed("u"):
-            if tello.is_flying:
-                tello.is_flying = False
-            else:
-                tello.is_flying = True
+            tello.is_flying = not tello.is_flying
             time.sleep(0.25)
         if kb.is_pressed("backspace"):
             tello.emergency()

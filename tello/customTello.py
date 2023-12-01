@@ -9,8 +9,8 @@ class CustomTello(Tello):
     # Two rewritten tello vars
     RESPONSE_TIMEOUT = 15
     TIME_BTW_RC_CONTROL_COMMANDS = -1
-    # Var to store the camera position
-    camera_position = "fwd"
+    # Var to store the camera position, True for forward camera, False for downward camera
+    camera_position = True
 
     def send_control_command(self, command: str, timeout: int = RESPONSE_TIMEOUT) -> bool:
         """
@@ -46,10 +46,10 @@ class CustomTello(Tello):
             print("Error, camera is already facing that direction.")
         if angle == "fwd":
             self.send_command_with_return("downvision 0")
-            self.camera_position = "fwd"
+            self.camera_position = True
         elif angle == "down":
             self.send_command_with_return("downvision 1")
-            self.camera_position = "down"
+            self.camera_position = False
         else:
             print("Camera angle not recognized")
 
