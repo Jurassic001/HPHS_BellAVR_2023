@@ -477,9 +477,9 @@ if keychecks_eitheror("m", "enter"):
     takeoff()
     goto_line(205, 125)
     goto_line(155, 80)
-    flip("b")
-    goto_line(-155, 125)
-    goto_line(-205, 80)
+    flip("r")
+    relativeHeight(220)
+    goto_line(-360, 100)
     land("none")
     keyboard_control()
 else:
