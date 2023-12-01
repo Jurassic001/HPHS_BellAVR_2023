@@ -8,6 +8,7 @@ class CustomTello(Tello):
 
     # Two rewritten tello vars
     RESPONSE_TIMEOUT = 15
+    TAKEOFF_TIMEOUT = 12
     TIME_BTW_RC_CONTROL_COMMANDS = -1
     # Var to store the camera position, True for forward camera, False for downward camera
     camera_position = True
