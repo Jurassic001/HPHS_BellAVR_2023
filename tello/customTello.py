@@ -1,5 +1,6 @@
 # Code by Max Haberer
 from djitellopy import Tello
+import time
 
 
 class CustomTello(Tello):
@@ -72,3 +73,33 @@ class CustomTello(Tello):
         """
         cmd = 'wifi {} {}'.format(myssid, mypassword)
         self.send_command_without_return(cmd)
+
+    def takeoff(self):
+        """Automatic takeoff.
+        """
+        # Something it takes a looooot of time to take off and return a succesful takeoff.
+        # So we better wait. Otherwise, it would give us an error on the following calls.
+        self.send_control_command("takeoff", timeout=Tello.TAKEOFF_TIMEOUT)
+        self.is_flying = True
+
+    def send_rc_control(self, left_right_velocity: int, forward_backward_velocity: int, up_down_velocity: int,
+                        yaw_velocity: int):
+        """Send RC control via four channels. Command is sent every self.TIME_BTW_RC_CONTROL_COMMANDS seconds.
+        Arguments:
+            left_right_velocity: -100~100 (left/right)
+            forward_backward_velocity: -100~100 (forward/backward)
+            up_down_velocity: -100~100 (up/down)
+            yaw_velocity: -100~100 (yaw)
+        """
+        def clamp100(x: int) -> int:
+            return max(-100, min(100, x))
+
+        if time.time() - self.last_rc_control_timestamp > self.TIME_BTW_RC_CONTROL_COMMANDS:
+            self.last_rc_control_timestamp = time.time()
+            cmd = 'rc {} {} {} {}'.format(
+                clamp100(left_right_velocity),
+                clamp100(forward_backward_velocity),
+                clamp100(up_down_velocity),
+                clamp100(yaw_velocity)
+            )
+            self.send_command_without_return(cmd)
