@@ -461,7 +461,7 @@ if keychecks_eitheror("m", "enter"):
     takeoff()
     goto_line(203, 125)
     goto_line(155, 80)
-    flip("r")
+    flip("b")
     goto_line(-155, 125)
     goto_line(-203, 80)
     # relativeHeight(220)
